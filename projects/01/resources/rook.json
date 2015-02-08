@@ -1,0 +1,28 @@
+{
+    "board": {
+	"xMin": 1,
+	"xMax": 8,
+	"yMin": 1,
+	"yMax": 8,
+	"zMin": null,
+	"zMax": null,
+	"obstacles": [ ]
+    },
+    "pieces": [
+	{
+	    "piece": "Rook",
+	    "xCoordinate": 2,
+	    "yCoordinate": 7,
+	    "reachability": [
+		{
+		    "limit-1": "| y1 - x1 | <= xMax",
+		    "limit-2": "y2 - x2 = 0"
+		},
+		{
+		    "limit-1": "| y2 - x2 | <= yMax",
+		    "limit-2": "y1 - y2 = 0"
+		}
+	    ]
+	}
+    ]
+}
