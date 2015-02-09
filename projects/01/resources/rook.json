@@ -15,12 +15,12 @@
 	    "yCoordinate": 7,
 	    "reachability": [
 		{
-		    "limit-1": "| y1 - x1 | <= xMax",
-		    "limit-2": "y2 - x2 = 0"
+		    "condition-1": "| y1 - x1 | <= 8",
+		    "condition-2": "y2 - x2 = 0"
 		},
 		{
-		    "limit-1": "| y2 - x2 | <= yMax",
-		    "limit-2": "y1 - y2 = 0"
+		    "condition-1": "| y2 - x2 | <= 8",
+		    "condition-2": "y1 - y2 = 0"
 		}
 	    ]
 	}

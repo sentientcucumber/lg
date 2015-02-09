@@ -77,7 +77,7 @@
 
   // Determines whether or not the board contains a given step
   var containsStep = function (board, step) {
-    var found = false;n
+    var found = false;
 
     board.rows.forEach(function (row) {
       if (_.contains(row, step)) {
@@ -93,10 +93,10 @@
     var valid = false;
 
     if (x < board.xLimit &&
-	x > -1 &&
-	y < board.yLimit &&
-	y > -1 &&
-	board.rows[y][x] === global.UNDISCOVERED) {
+        x > -1 &&
+        y < board.yLimit &&
+        y > -1 &&
+        board.rows[y][x] === global.UNDISCOVERED) {
       valid = true;
     }
 
@@ -106,159 +106,200 @@
   // Process the piece's reachability to see if the cell can be reached
   var evalCell = function (board, x, y, piece, start) {
     var reachability = piece.reachability,
-	outcome;
+        outcome;
 
-    reachability.forEach(function (entry) {
+    // Only one of the entries must be true
+    var conditionMet = reachability.some(function (entry) {
       var conditions = Object.keys(entry);
-      
-      conditions.forEach(function (condition) {
-	var expr = processCondition(entry[condition]);
-	outcome = evalExpression(expr, x, y, start);
+
+      // Both conditions must be true
+      outcome = conditions.every(function (condition) {
+        var expr = processCondition(entry[condition]);
+        return evalExpression(expr, x, y, start);
       });
+
+      return outcome;
     });
 
-    return outcome;
+    return conditionMet;
   };
 
   // Change the limit into something MathJs can use
   var processCondition = function (str) {
-
     // expr holds information for proper evaluation in evalExpression
     var expr = {};
     expr.equality = str.match(/(<?>?=)/g).toString();
 
-    var eq = str.split(expr.equality),
-	ex;
+    var arr = str.split(expr.equality),
+        lhs,
+        rhs;
 
     // After splitting, the first portion should be the expression to evaluate
-    if (eq.length === 2) {
-      ex = eq[0].trim();
-      expr.result = eq[1].trim();
-    };
-
-    // Signal to evalExpression absolute value should be applied
-    if ((ex.match(/\|/g) || []).length === 2) {
-      expr.absolute = true;
-      expr.equation = ex.replace(/\|/g, '').trim();
+    if (arr.length === 2) {
+      lhs = arr[0].trim();
+      rhs = arr[1].trim();
     }
-    
+
+    if (isNaN(rhs)) {
+      if ((lhs.match(/\|/g) || []).length > 0) {
+	expr.rhsAbsolute = true;
+        rhs = rhs.replace(/\|/g, '');
+      } else {
+	expr.rhsAbsolute = false;
+      }
+    }
+
+    expr.rhs = rhs.trim();
+
+    if ((lhs.match(/\|/g) || []).length > 0) {
+      expr.lhsAbsolute = true;
+      lhs = lhs.replace(/\|/g, '');
+    } else {
+      expr.lhsAbsolute = false;
+    }
+
+    expr.lhs = lhs.trim();
+
     return expr;
   };
 
   // Evaluate the expression given, if it is unreachable, return saying so
   var evalExpression = function (expr, y1, y2, start) {
     var x1 = start.x,
-	x2 = start.y,
-	eq = expr.equation;
+        x2 = start.y,
+        lhs = expr.lhs,
+        rhs = expr.rhs,
+        result;
 
-    eq = eq.replace('x1', x1)
+    if (isNaN(rhs)) {
+      rhs = rhs.replace('x1', x1)
+        .replace('y1', y1)
+        .replace('x2', x2)
+        .replace('y2', y2);
+
+      rhs = (expr.rhsAbsolute) ? Math.abs(mathjs.eval(rhs)) : mathjs.eval(rhs);
+    }
+
+    lhs = lhs.replace('x1', x1)
       .replace('y1', y1)
       .replace('x2', x2)
       .replace('y2', y2);
 
-    var result = (expr.absolute) ? Math.abs(mathjs.eval(eq)) : mathjs.eval(eq),
-	outcome;
-    
+    lhs = (expr.lhsAbsolute) ? Math.abs(mathjs.eval(lhs)) : mathjs.eval(lhs);
+
     switch (true) {
     case (expr.equality === '<='):
-      outcome = (result <= expr.result);
+      result = (lhs <= rhs);
       break;
     case (expr.equality === '>='):
-      outcome = (result >= expr.result);
+      result = (lhs >= rhs);
       break;
     case (expr.equality === '='):
-      outcome = (result == expr.result);
-      break;
-    default:
+      result = (lhs == rhs);
       break;
     }
 
-    return outcome;
+    return result;
   };
-  
+
   // Find the starting points of the steps
   var findStartingPoints = function (board, step) {
     var steps = [];
 
     board.rows.forEach(function (row, i) {
       row.forEach(function (col, j) {
-	if (board.rows[i][j] === step) {
-	  steps.push({
-	    "x": j,
-	    "y": i
-	  });
-	}
+        if (board.rows[i][j] === step) {
+          steps.push({
+            "x": j,
+            "y": i
+          });
+        }
       });
     });
 
     return steps;
   };
-  
-  // Iterate radially outwards from the starting point given from x and y.
-  var iterateRadially = function (board, point, piece, step) {
-    var limit = Math.max(board.xLimit, board.yLimit),
-	rows = board.rows,
-	x = point.x,
-	y = point.y;
 
-    // FIXME Remove constant for limit
-    for (var i = 1; i <= 1; i++) {
+  var findLimit = function (reachability) {
+    var limits = [];
+
+    reachability.forEach(function (conditions) {
+      var keys = Object.keys(conditions);
+
+      keys.forEach(function (entry) {
+        limits.push(conditions[entry].replace(/[a-z]\d|\W/g, '').trim());
+      });
+    });
+
+    return _.max(limits);
+  };
+
+  // Iterate radially outwards from the starting point given from x and y.
+  var iterateRadially = function (board, point, piece, step, limit) {
+    var rows = board.rows,
+        x = point.x,
+        y = point.y,
+        result;
+
+    for (var i = 1; i <= limit; i++) {
       if (validCell(board, x, y + i)) {
-      	var result = evalCell(board, x, y + i, piece, point);
-      	rows[y + i][x] = (result) ? step + 1 : '+';
+        result = evalCell(board, x, y + i, piece, point);
+        rows[y + i][x] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x + i, y + i)) {
-      	var result = evalCell(board, x + i, y + i, piece, point);
-      	rows[y + i][x + i] = (result) ? step + 1 : '+';
+        result = evalCell(board, x + i, y + i, piece, point);
+        rows[y + i][x + i] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x + i, y)) {
-      	var result = evalCell(board, x + i, y, piece, point);
-      	rows[y][x + i] = (result) ? step + 1 : '+';
+        result = evalCell(board, x + i, y, piece, point);
+        rows[y][x + i] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x + i, y - i)) {
-      	var result = evalCell(board, x + i, y - i, piece, point);
-      	rows[y - i][x + i] = (result) ? step + 1 : '+';
+        result = evalCell(board, x + i, y - i, piece, point);
+        rows[y - i][x + i] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x, y - i)) {
-      	var result = evalCell(board, x, y - i, piece, point);
-      	rows[y - i][x] = (result) ? step + 1 : '+';
+        result = evalCell(board, x, y - i, piece, point);
+        rows[y - i][x] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x - i, y - i)) {
-      	var result = evalCell(board, x - i, y - i, piece, point);
-      	rows[y - i][x - i] = (result) ? step + 1 : '+';
+        result = evalCell(board, x - i, y - i, piece, point);
+        rows[y - i][x - i] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x - i, y)) {
-      	var result = evalCell(board, x - i, y, piece, point);
-      	rows[y][x - i] = (result) ? step + 1 : '+';
+        result = evalCell(board, x - i, y, piece, point);
+        rows[y][x - i] = (result) ? step + 1 : global.UNDISCOVERED;
       }
 
       if (validCell(board, x - i, y + i)) {
-      	var result = evalCell(board, x - i, y + 1, piece, point);
-      	rows[y + i][x - i] = (result) ? step + 1 : '+';
+        result = evalCell(board, x - i, y + i, piece, point);
+        rows[y + i][x - i] = (result) ? step + 1 : global.UNDISCOVERED;
       }
     }
   };
 
   // Populate the reachability board based on the current piece
   var populateReachabilityBoard = function (board, piece) {
-    var reachability = piece.reachability,
-        step = 0;
+    var reachability = piece.reachability;
 
     for (var i = 0; containsStep(board, i); i++) {
       var points = findStartingPoints(board, i);
 
       points.forEach(function (point) {
-	iterateRadially(board, point, piece, i);
+        var limit = findLimit(piece.reachability);
+        iterateRadially(board, point, piece, i, limit);
       });
     }
 
+    console.log(piece.piece);
     prettyPrintBoard(board.rows);
+    console.log("\n");
   };
 
   // Actual chunk of code that runs
