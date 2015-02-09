@@ -70,8 +70,10 @@
 
   // Pretty printing for the board
   var prettyPrintBoard = function (board) {
-    board.forEach(function (row) {
-      console.log(row.join(' '));
+    var b = board.reverse();
+
+    b.forEach(function (row) {
+      console.log(row.reverse().join(' '));
     });
   };
 
@@ -141,10 +143,10 @@
 
     if (isNaN(rhs)) {
       if ((lhs.match(/\|/g) || []).length > 0) {
-	expr.rhsAbsolute = true;
+        expr.rhsAbsolute = true;
         rhs = rhs.replace(/\|/g, '');
       } else {
-	expr.rhsAbsolute = false;
+        expr.rhsAbsolute = false;
       }
     }
 
@@ -230,7 +232,7 @@
       });
     });
 
-    return _.max(limits);
+    return parseInt(_.max(limits));
   };
 
   // Iterate radially outwards from the starting point given from x and y.
@@ -240,45 +242,12 @@
         y = point.y,
         result;
 
-    for (var i = 1; i <= limit; i++) {
-      if (validCell(board, x, y + i)) {
-        result = evalCell(board, x, y + i, piece, point);
-        rows[y + i][x] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x + i, y + i)) {
-        result = evalCell(board, x + i, y + i, piece, point);
-        rows[y + i][x + i] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x + i, y)) {
-        result = evalCell(board, x + i, y, piece, point);
-        rows[y][x + i] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x + i, y - i)) {
-        result = evalCell(board, x + i, y - i, piece, point);
-        rows[y - i][x + i] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x, y - i)) {
-        result = evalCell(board, x, y - i, piece, point);
-        rows[y - i][x] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x - i, y - i)) {
-        result = evalCell(board, x - i, y - i, piece, point);
-        rows[y - i][x - i] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x - i, y)) {
-        result = evalCell(board, x - i, y, piece, point);
-        rows[y][x - i] = (result) ? step + 1 : global.UNDISCOVERED;
-      }
-
-      if (validCell(board, x - i, y + i)) {
-        result = evalCell(board, x - i, y + i, piece, point);
-        rows[y + i][x - i] = (result) ? step + 1 : global.UNDISCOVERED;
+    for (var i = (y - limit); i <= (y + limit); i++) {
+      for (var j = (x - limit); j <= (x + limit); j++) {
+	if (validCell(board, j, i)) {
+	  result = evalCell(board, j, i, piece, point);
+	  rows[i][j] = (result) ? step + 1 : global.UNDISCOVERED;
+	}
       }
     }
   };
