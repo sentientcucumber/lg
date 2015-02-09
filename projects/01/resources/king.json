@@ -15,10 +15,10 @@
 	    "yCoordinate": 7,
 	    "reachability": [
 		{
-		    "limit": "| y1 - x1 | <= 1"
+		    "condition-1": "| y1 - x1 | <= 1"
 		},
 		{
-		    "limit": "| y2 - x2 | <= 1"
+		    "condition-1": "| y2 - x2 | <= 1"
 		}
 	    ]
 	}

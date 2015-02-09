@@ -77,7 +77,7 @@
 
   // Determines whether or not the board contains a given step
   var containsStep = function (board, step) {
-    var found = false;
+    var found = false;n
 
     board.rows.forEach(function (row) {
       if (_.contains(row, step)) {
@@ -96,8 +96,7 @@
 	x > -1 &&
 	y < board.yLimit &&
 	y > -1 &&
-        (board.rows[y][x] === global.UNREACHABLE ||
-	 board.rows[y][x] === global.UNDISCOVERED)) {
+	board.rows[y][x] === global.UNDISCOVERED) {
       valid = true;
     }
 
@@ -105,10 +104,78 @@
   };
 
   // Process the piece's reachability to see if the cell can be reached
-  var evalCell = function () {
-    
+  var evalCell = function (board, x, y, piece, start) {
+    var reachability = piece.reachability,
+	outcome;
+
+    reachability.forEach(function (entry) {
+      var conditions = Object.keys(entry);
+      
+      conditions.forEach(function (condition) {
+	var expr = processCondition(entry[condition]);
+	outcome = evalExpression(expr, x, y, start);
+      });
+    });
+
+    return outcome;
   };
 
+  // Change the limit into something MathJs can use
+  var processCondition = function (str) {
+
+    // expr holds information for proper evaluation in evalExpression
+    var expr = {};
+    expr.equality = str.match(/(<?>?=)/g).toString();
+
+    var eq = str.split(expr.equality),
+	ex;
+
+    // After splitting, the first portion should be the expression to evaluate
+    if (eq.length === 2) {
+      ex = eq[0].trim();
+      expr.result = eq[1].trim();
+    };
+
+    // Signal to evalExpression absolute value should be applied
+    if ((ex.match(/\|/g) || []).length === 2) {
+      expr.absolute = true;
+      expr.equation = ex.replace(/\|/g, '').trim();
+    }
+    
+    return expr;
+  };
+
+  // Evaluate the expression given, if it is unreachable, return saying so
+  var evalExpression = function (expr, y1, y2, start) {
+    var x1 = start.x,
+	x2 = start.y,
+	eq = expr.equation;
+
+    eq = eq.replace('x1', x1)
+      .replace('y1', y1)
+      .replace('x2', x2)
+      .replace('y2', y2);
+
+    var result = (expr.absolute) ? Math.abs(mathjs.eval(eq)) : mathjs.eval(eq),
+	outcome;
+    
+    switch (true) {
+    case (expr.equality === '<='):
+      outcome = (result <= expr.result);
+      break;
+    case (expr.equality === '>='):
+      outcome = (result >= expr.result);
+      break;
+    case (expr.equality === '='):
+      outcome = (result == expr.result);
+      break;
+    default:
+      break;
+    }
+
+    return outcome;
+  };
+  
   // Find the starting points of the steps
   var findStartingPoints = function (board, step) {
     var steps = [];
@@ -128,43 +195,52 @@
   };
   
   // Iterate radially outwards from the starting point given from x and y.
-  var iterateRadially = function (board, x, y) {
-    var start = board.rows[x][y],
-	limit = Math.max(board.xLimit, board.yLimit),
-	rows = board.rows;
+  var iterateRadially = function (board, point, piece, step) {
+    var limit = Math.max(board.xLimit, board.yLimit),
+	rows = board.rows,
+	x = point.x,
+	y = point.y;
 
-
-    for (var i = 1; i <= limit; i++) {
+    // FIXME Remove constant for limit
+    for (var i = 1; i <= 1; i++) {
       if (validCell(board, x, y + i)) {
-	
+      	var result = evalCell(board, x, y + i, piece, point);
+      	rows[y + i][x] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x + i, y + i)) {
-
+      	var result = evalCell(board, x + i, y + i, piece, point);
+      	rows[y + i][x + i] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x + i, y)) {
-
+      	var result = evalCell(board, x + i, y, piece, point);
+      	rows[y][x + i] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x + i, y - i)) {
-
+      	var result = evalCell(board, x + i, y - i, piece, point);
+      	rows[y - i][x + i] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x, y - i)) {
-
+      	var result = evalCell(board, x, y - i, piece, point);
+      	rows[y - i][x] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x - i, y - i)) {
-
+      	var result = evalCell(board, x - i, y - i, piece, point);
+      	rows[y - i][x - i] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x - i, y)) {
-
+      	var result = evalCell(board, x - i, y, piece, point);
+      	rows[y][x - i] = (result) ? step + 1 : '+';
       }
 
       if (validCell(board, x - i, y + i)) {
-
+      	var result = evalCell(board, x - i, y + 1, piece, point);
+      	rows[y + i][x - i] = (result) ? step + 1 : '+';
       }
     }
   };
@@ -175,12 +251,14 @@
         step = 0;
 
     for (var i = 0; containsStep(board, i); i++) {
-      var points = findStartingPoints(board, step);
+      var points = findStartingPoints(board, i);
 
       points.forEach(function (point) {
-	iterateRadially(board, point.x, point.y);
+	iterateRadially(board, point, piece, i);
       });
     }
+
+    prettyPrintBoard(board.rows);
   };
 
   // Actual chunk of code that runs
