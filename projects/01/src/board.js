@@ -15,55 +15,47 @@
 
   // Generate a board of n x m, if a seed is provided, a starting point (0)
   // will be placed at the coordinates
-  exports.generateBoard = function (board, n, m, seed) {
+  exports.generateBoard = function (board, n, m, z, seed) {
     var rows = [];
 
     for (var i = 0; i < n; i++) {
       var cols = [];
 
       for (var j = 0; j < m; j++) {
-	cols.push(global.UNDISCOVERED);
+        if (z) {
+          var tmp = [];
+
+          for (var k = 0; k < z; k++) {
+            tmp.push(global.UNDISCOVERED);
+          }
+
+          cols.push(tmp);
+        } else {
+          cols.push(global.UNDISCOVERED);
+        }
       }
 
       rows.push(cols);
     }
 
     if (seed) {
-      rows[seed.y][seed.x] = 0;
+      if (z) {
+        rows[seed.y][seed.x][seed.z] = 0;
+      } else {
+        rows[seed.y][seed.x] = 0;
+      }
     }
+
+    board.obstacles.forEach(function (obstacle) {
+      rows[obstacle.y][obstacle.x] = global.UNREACHABLE;
+    });
 
     var info = {};
 
     info.rows = rows;
     info.xLimit = n;
     info.yLimit = m;
-
-    return info;
-  };
-
-  // Generate a board based on the information passed in.
-  exports.generateReachabilityBoard = function (board) {
-    var rows = [],
-        xLimit = board.xMax * 2 - 1,
-        yLimit = board.yMax * 2 - 1;
-
-    for (var i = 0; i < xLimit; i++) {
-      var cols = [];
-
-      for (var j = 0; j < yLimit; j++)
-        cols.push(global.UNDISCOVERED);
-
-      rows.push(cols);
-    }
-
-    // Seed the starting position of the piece
-    rows[Math.floor(xLimit / 2)][Math.floor(yLimit / 2)] = 0;
-
-    var info = {};
-
-    info.rows = rows;
-    info.xLimit = xLimit;
-    info.yLimit = yLimit;
+    info.zLimit = z;
 
     return info;
   };
@@ -73,7 +65,13 @@
     var b = board.reverse();
 
     b.forEach(function (row) {
-      console.log(row.join(' '));
+      if (board.hasOwnProperty('zMax')) {
+        row.forEach(function (col) {
+          console.log(col.join(' '));
+        });
+      } else {
+        console.log(row.join(' '));
+      }
     });
   };
 
@@ -82,31 +80,40 @@
     var found = false;
 
     board.rows.forEach(function (row) {
-      if (_.contains(row, step)) {
-        found = true;
-      };
+      if (typeof row[0] === "object") {
+        row.forEach(function (col) {
+          if (_.contains(col, step)) {
+            found = true;
+          }
+        });
+      } else {
+        if (_.contains(row, step)) {
+          found = true;
+        };
+      }
     });
 
     return found;
   };
 
   // Determines whether or not the cell to be evaluated is valid
-  var validCell = function (board, x, y) {
+  var validCell = function (board, x, y, z) {
     var valid = false;
 
-    if (x < board.xLimit &&
-        x > -1 &&
-        y < board.yLimit &&
-        y > -1 &&
-        board.rows[y][x] === global.UNDISCOVERED) {
-      valid = true;
+    if (x < board.xLimit && x > -1 &&
+        y < board.yLimit && y > -1) {
+      if (z < board.zLimit && z > -1) {
+	valid = (board.rows[y][x][z] === global.UNDISCOVERED) ? true : false;
+      } else {
+	valid = (board.rows[y][x] === global.UNDISCOVERED) ? true : false;
+      }
     }
 
     return valid;
   };
 
   // Process the piece's reachability to see if the cell can be reached
-  var evalCell = function (board, x, y, piece, start) {
+  var evalCell = function (board, piece, start, x, y, z) {
     var reachability = piece.reachability;
 
     // Only one of the entries must be true
@@ -116,7 +123,7 @@
       // Both conditions must be true
       var outcome = conditions.every(function (condition) {
         var expr = processCondition(entry[condition]);
-        return evalExpression(expr, x, y, start);
+        return evalExpression(expr, start, x, y, z);
       });
 
       return outcome;
@@ -165,9 +172,10 @@
   };
 
   // Evaluate the expression given
-  var evalExpression = function (expr, y1, y2, start) {
+  var evalExpression = function (expr, start, y1, y2, y3) {
     var x1 = start.x,
         x2 = start.y,
+	x3 = start.z,
         lhs = expr.lhs,
         rhs = expr.rhs,
         result;
@@ -176,7 +184,9 @@
       rhs = rhs.replace('x1', x1)
         .replace('y1', y1)
         .replace('x2', x2)
-        .replace('y2', y2);
+        .replace('y2', y2)
+	.replace('x3', x3)
+	.replace('y3', y3);
 
       rhs = (expr.rhsAbsolute) ? Math.abs(mathjs.eval(rhs)) : mathjs.eval(rhs);
     }
@@ -184,7 +194,9 @@
     lhs = lhs.replace('x1', x1)
       .replace('y1', y1)
       .replace('x2', x2)
-      .replace('y2', y2);
+      .replace('y2', y2)
+      .replace('x3', x3)
+      .replace('y3', y3);
 
     lhs = (expr.lhsAbsolute) ? Math.abs(mathjs.eval(lhs)) : mathjs.eval(lhs);
 
@@ -199,7 +211,7 @@
       result = (lhs == rhs);
       break;
     }
-
+    
     return result;
   };
 
@@ -209,11 +221,26 @@
 
     board.rows.forEach(function (row, i) {
       row.forEach(function (col, j) {
-        if (board.rows[i][j] === step) {
-          steps.push({
-            "x": j,
-            "y": i
+
+        if (typeof col === "object") {
+          // If a 3D board
+          col.forEach(function (dep, k) {
+            if (board.rows[i][j][k] === step) {
+              steps.push({
+                "x": j,
+                "y": i,
+                "z": k
+              });
+            }
           });
+        } else {
+          // If a 2D board
+          if (board.rows[i][j] === step) {
+            steps.push({
+              "x": j,
+              "y": i
+            });
+          }
         }
       });
     });
@@ -240,14 +267,24 @@
     var rows = board.rows,
         x = point.x,
         y = point.y,
+        z = point.z,
         result;
 
     for (var i = (y - limit); i <= (y + limit); i++) {
       for (var j = (x - limit); j <= (x + limit); j++) {
-	if (validCell(board, j, i)) {
-	  result = evalCell(board, j, i, piece, point);
-	  rows[i][j] = (result) ? step + 1 : global.UNDISCOVERED;
-	}
+        if (z) {
+          for (var k = (z - limit); k <= (z + limit); k++) {
+            if (validCell(board, j, i, k)) {
+              result = evalCell(board, piece, point, j, i, k);
+              rows[i][j][k] = (result) ? step + 1 : global.UNDISCOVERED;
+            }
+          }
+        } else {
+          if (validCell(board, j, i)) {
+            result = evalCell(board, piece, point, j, i);
+            rows[i][j] = (result) ? step + 1 : global.UNDISCOVERED;
+          }
+        }
       }
     }
   };
