@@ -105,15 +105,14 @@
 
   // Process the piece's reachability to see if the cell can be reached
   var evalCell = function (board, x, y, piece, start) {
-    var reachability = piece.reachability,
-        outcome;
+    var reachability = piece.reachability;
 
     // Only one of the entries must be true
     var conditionMet = reachability.some(function (entry) {
       var conditions = Object.keys(entry);
 
       // Both conditions must be true
-      outcome = conditions.every(function (condition) {
+      var outcome = conditions.every(function (condition) {
         var expr = processCondition(entry[condition]);
         return evalExpression(expr, x, y, start);
       });
@@ -163,7 +162,7 @@
     return expr;
   };
 
-  // Evaluate the expression given, if it is unreachable, return saying so
+  // Evaluate the expression given
   var evalExpression = function (expr, y1, y2, start) {
     var x1 = start.x,
         x2 = start.y,

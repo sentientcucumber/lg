@@ -1,0 +1,156 @@
+% Created 2015-02-08 Sun 23:40
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\setlength\parindent{0pt}
+\usepackage{titling}
+\addtolength{\topmargin}{-1.375in}
+\addtolength{\textheight}{1.75in}
+\addtolength{\oddsidemargin}{-.375in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{0.75in}
+\author{Michael Hunsinger}
+\date{\today}
+\title{Project One}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.4.1 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section*{Project}
+\label{sec-1}
+The first project for Linguistic Geometry, Spring semester of 2015.
+
+\subsection*{Installation}
+\label{sec-1-1}
+The project was done using Node.js and requires Node.js along with npm to be
+installed (usually comes with Node.js). Node.js can be downloaded from the
+\href{https://nodejs.org}{Node.Js} website. It can also be install through a package manager if running
+Linux.
+
+\subsection*{Build}
+\label{sec-1-2}
+Once Node.js is installed, navigate to the directory containing the
+project. The node modules were not bundled and will have to be installed via
+the following command
+
+\begin{verbatim}
+npm install
+\end{verbatim}
+
+\subsection*{Run}
+\label{sec-1-3}
+After the modules are installed, run the following command to run the
+project.
+
+\begin{verbatim}
+npm run project res/chess.json
+\end{verbatim}
+
+\subsection*{Input}
+\label{sec-1-4}
+The \verb~chess.json~ file provided contains all chess pieces. Below is a small
+snippet of the file.
+
+\begin{verbatim}
+{
+    "board": {
+	"xMax": 8,
+	"yMax": 8,
+	"zMax": null,
+	"obstacles": [ ]
+    },
+    "pieces": [
+	{
+	    "piece": "King",
+	    "xCoordinate": 2,
+	    "yCoordinate": 7,
+	    "reachability": [
+		{
+		    "condition-1": "| y1 - x1 | <= 1"
+		},
+		{
+		    "condition-1": "| y2 - x2 | <= 1"
+		}
+	    ]
+	}
+    ]
+}
+\end{verbatim}
+
+As you can see, it contains information about the board and any number of
+pieces.
+
+\subsubsection*{Board}
+\label{sec-1-4-1}
+Below are some notes regarding the fields for the board.
+
+\begin{itemize}
+\item The board is 1-based and assumes the min is `1' and thus not required.
+\item Obstacles are an array of points that cannot be reached by any
+piece. Below is a sample of an obstacle object that would cause the point
+(3,2) to be unreachable..
+
+\begin{verbatim}
+{
+    "x": 3,
+    "y": 2
+}
+\end{verbatim}
+\item The board information stays constant when reading each piece.
+\end{itemize}
+
+\subsubsection*{Pieces}
+\label{sec-1-4-2}
+Below are some notes regarding the fields for pieces.
+
+\begin{itemize}
+\item \verb~x~ and \verb~y~ are the starting coordinates for the given piece.
+\item Reachability is an array of conditions that are used to determine if a
+given cell is reachable. For each reachability, all conditions must be met
+in order for it to be reachable. However, not all reachabilities must be
+hold true for the cell to be reachable.
+\end{itemize}
+
+\subsection*{Output}
+\label{sec-1-5}
+Below is sample output for a King.
+
+\begin{verbatim}
+7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+7 6 6 6 6 6 6 6 6 6 6 6 6 6 7
+7 6 5 5 5 5 5 5 5 5 5 5 5 6 7
+7 6 5 4 4 4 4 4 4 4 4 4 5 6 7
+7 6 5 4 3 3 3 3 3 3 3 4 5 6 7
+7 6 5 4 3 2 2 2 2 2 3 4 5 6 7
+7 6 5 4 3 2 1 1 1 2 3 4 5 6 7
+7 6 5 4 3 2 1 0 1 2 3 4 5 6 7
+7 6 5 4 3 2 1 1 1 2 3 4 5 6 7
+7 6 5 4 3 2 2 2 2 2 3 4 5 6 7
+7 6 5 4 3 3 3 3 3 3 3 4 5 6 7
+7 6 5 4 4 4 4 4 4 4 4 4 5 6 7
+7 6 5 5 5 5 5 5 5 5 5 5 5 6 7
+7 6 6 6 6 6 6 6 6 6 6 6 6 6 7
+7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+\end{verbatim}
+% Emacs 24.4.1 (Org mode 8.2.10)
+\end{document}
