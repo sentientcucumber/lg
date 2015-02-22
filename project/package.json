@@ -1,7 +1,7 @@
 {
-  "name": "LG-Project-01",
+  "name": "LG-Projects",
   "version": "1.0.0",
-  "description": "First project for Linguistic geometry, done in Node.js.",
+  "description": "Projects for Linguistic Geometry, done in Node.js.",
   "main": "src/main.js",
   "author": "Michael Hunsinger",
   "scripts": {

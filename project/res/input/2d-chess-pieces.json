@@ -7,8 +7,8 @@
     "pieces": [
         {
             "piece": "King",
-            "x": 2,
-            "y": 7,
+            "startX": 2,
+            "startY": 7,
             "reachability": [
                 {
                     "condition-1": "| y1 - x1 | <= 1"
@@ -20,8 +20,8 @@
         },
         {
             "piece": "Queen",
-            "x": 2,
-            "y": 7,
+            "startX": 2,
+            "startY": 7,
             "reachability": [
                 {
                     "condition-1": "| y1 - x1 | <= 8",
@@ -39,8 +39,8 @@
         },
 	{
             "piece": "Bishop",
-            "x": 2,
-            "y": 7,
+            "startX": 2,
+            "startY": 7,
             "reachability": [
 		{
                     "condition-1": "| y1 - x1 | <= 8",
@@ -50,8 +50,8 @@
         },
 	{
             "piece": "Knight",
-            "x": 2,
-            "y": 7,
+            "startX": 2,
+            "startY": 7,
             "reachability": [
 		{
                     "condition-1": "| y1 - x1 | = 2",
@@ -65,8 +65,8 @@
         },
 	{
             "piece": "Rook",
-            "x": 2,
-            "y": 7,
+            "startX": 2,
+            "startY": 7,
             "reachability": [
                 {
                     "condition-1": "| y1 - x1 | <= 8",
@@ -80,8 +80,8 @@
         },
 	{
             "piece": "Pawn",
-            "x": 2,
-            "y": 7,
+            "startX": 2,
+            "startY": 7,
             "reachability": [
                 {
                     "condition-1": "y2 - x2 = 1",
