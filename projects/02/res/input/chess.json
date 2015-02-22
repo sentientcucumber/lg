@@ -1,0 +1,93 @@
+{
+    "board": {
+        "xMax": 8,
+        "yMax": 8,
+        "obstacles": [ ]
+    },
+    "pieces": [
+        {
+            "piece": "King",
+            "x": 2,
+            "y": 7,
+            "reachability": [
+                {
+                    "condition-1": "| y1 - x1 | <= 1"
+                },
+                {
+                    "condition-1": "| y2 - x2 | <= 1"
+                }
+            ]
+        },
+        {
+            "piece": "Queen",
+            "x": 2,
+            "y": 7,
+            "reachability": [
+                {
+                    "condition-1": "| y1 - x1 | <= 8",
+		    "condition-2": "| y1 - x1 | = | y2 - x2 |"
+                },
+                {
+                    "condition-1": "| y2 - x2 | <= 8",
+		    "condition-2": "| y1 - x1 | = 0"
+                },
+		{
+                    "condition-1": "| y1 - x1 | <= 8",
+		    "condition-2": "| y2 - x2 | = 0"
+                }
+            ]
+        },
+	{
+            "piece": "Bishop",
+            "x": 2,
+            "y": 7,
+            "reachability": [
+		{
+                    "condition-1": "| y1 - x1 | <= 8",
+		    "condition-2": "| y1 - x1 | = | y2 - x2 |"
+                }
+            ]
+        },
+	{
+            "piece": "Knight",
+            "x": 2,
+            "y": 7,
+            "reachability": [
+		{
+                    "condition-1": "| y1 - x1 | = 2",
+		    "condition-2": "| y2 - x2 | = 1"
+                },
+		{
+                    "condition-1": "| y1 - x1 | = 1",
+		    "condition-2": "| y2 - x2 | = 2"
+                }
+            ]
+        },
+	{
+            "piece": "Rook",
+            "x": 2,
+            "y": 7,
+            "reachability": [
+                {
+                    "condition-1": "| y1 - x1 | <= 8",
+                    "condition-2": "| y2 - x2 | = 0"
+                },
+                {
+                    "condition-1": "| y2 - x2 | <= 8",
+                    "condition-2": "| y1 - x1 | = 0"
+                }
+            ]
+        },
+	{
+            "piece": "Pawn",
+            "x": 2,
+            "y": 7,
+            "reachability": [
+                {
+                    "condition-1": "y2 - x2 = 1",
+		    "condition-2": "y1 - x1 = 0"
+                }
+            ]
+        }
+    ]
+}

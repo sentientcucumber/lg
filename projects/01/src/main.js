@@ -2,10 +2,11 @@
   'use-strict';
 
   // Dependencies
-  var validation = require('./validation.js'),
-      board = require('./board');
+  var utils = require('./utils.js');
+  var board = require('./board');
 
-  var input = validation.validateRun();
+  var input = utils.validateRun();
+  var output = [];
 
   if (input) {
     input.pieces.forEach(function (piece) {
@@ -41,10 +42,19 @@
 	  					  reachInfo.z,
 	  					  reachInfo.start);
       
-      board.populateBoard(chessBoard, piece);
-      board.populateBoard(reachabilityBoard, piece);
+      var outputChessBoard = board.populateBoard(chessBoard, piece);
+      var outputReachBoard = board.populateBoard(reachabilityBoard, piece);
+
+      var data = {};
+      data.piece = piece.piece;
+      data.chessBoard = outputChessBoard;
+      data.reachBoard = outputReachBoard;
+
+      output.push(data);
     });
+
+    utils.writeOutput(output);
   } else {
-    console.log("Exiting...");
+    console.log("Invalid file, exiting program.");
   }
 })();

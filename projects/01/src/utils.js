@@ -1,4 +1,4 @@
-// validation.js
+// utils.js
 // Contains functions used to validate input
 
 (function() {
@@ -21,7 +21,7 @@
       return null;
     }
   };
-  
+
   // Checks to see if a file was provided, and if so, does the file contain
   // the required information. If so, a JSON object is returned to be used
   // in subsequent calls.
@@ -36,4 +36,20 @@
       return null;
     }
   };
+
+  // Writes the output to a file
+  exports.writeOutput = function (data) {
+    var inputPath = process.argv[2].split(/\./)[0];
+    var inputFilename = inputPath.replace('input', 'output');
+    var filename = inputFilename + '-output.json';
+
+    fs.appendFile(filename, JSON.stringify(data, null, 2), function (err) {
+      if (err) {
+        console.log('An error occurred while writing to file ' + filename);
+        console.log(err);
+      } else {
+        console.log(filename + ' written successfully!');
+      }
+    });
+};
 })();

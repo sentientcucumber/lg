@@ -5,8 +5,9 @@
   'use-strict';
 
   // Dependencies
-  var mathjs = require('mathjs'),
-      _ = require('underscore');
+  var mathjs = require('mathjs');
+  var _ = require('underscore');
+  var fs = require('fs');
 
   // Gloabls
   var global = {};
@@ -61,18 +62,23 @@
   };
 
   // Pretty printing for the board
-  var prettyPrintBoard = function (board) {
+  var prettyPrintBoard = function (board, piece) {
     var b = board.reverse();
+    var output = [];
 
     b.forEach(function (row) {
       if (board.hasOwnProperty('zMax')) {
         row.forEach(function (col) {
-          console.log(col.join(' '));
+          // console.log(col.join(' '));
+	  output.push(col.join(' '));
         });
       } else {
-        console.log(row.join(' '));
+        // console.log(row.join(' '));
+	output.push(row.join(' '));
       }
     });
+
+    return output;
   };
 
   // Determines whether or not the board contains a given step
@@ -138,9 +144,9 @@
     var expr = {};
     expr.equality = str.match(/(<?>?=)/g).toString();
 
-    var arr = str.split(expr.equality),
-        lhs,
-        rhs;
+    var arr = str.split(expr.equality);
+    var lhs;
+    var rhs;
 
     // After splitting, the first portion should be the expression to evaluate
     if (arr.length === 2) {
@@ -173,12 +179,12 @@
 
   // Evaluate the expression given
   var evalExpression = function (expr, start, y1, y2, y3) {
-    var x1 = start.x,
-        x2 = start.y,
-	x3 = start.z,
-        lhs = expr.lhs,
-        rhs = expr.rhs,
-        result;
+    var x1 = start.x;
+    var x2 = start.y;
+    var x3 = start.z;
+    var lhs = expr.lhs;
+    var rhs = expr.rhs;
+    var result;
 
     if (isNaN(rhs)) {
       rhs = rhs.replace('x1', x1)
@@ -289,6 +295,19 @@
     }
   };
 
+  var writeResults = function (output, piece) {
+    var filename = process.argv[2] + '-output.json';
+
+    fs.appendFile('./res/output/' + filename, function (err) {
+      if (err) {
+	console.log('An error occurred while writing to the file');
+	console.log(err);
+      } else {
+	console.log()
+      }
+    });
+  };
+
   // Populate the reachability board based on the current piece
   exports.populateBoard = function (board, piece) {
     var reachability = piece.reachability;
@@ -302,8 +321,12 @@
       });
     }
 
+    var output = prettyPrintBoard(board.rows);
+
     console.log(piece.piece);
-    prettyPrintBoard(board.rows);
+    console.log(output);
     console.log("\n");
+
+    return output;
   };
 })();

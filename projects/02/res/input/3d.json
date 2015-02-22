@@ -1,8 +1,8 @@
 {
     "board": {
-        "xMax": 8,
-        "yMax": 8,
-        "zMax": 8,
+        "xMax": 3,
+        "yMax": 3,
+        "zMax": 3,
         "obstacles": [ ]
     },
     "pieces": [
