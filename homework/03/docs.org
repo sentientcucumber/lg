@@ -1,0 +1,350 @@
+#+TITLE: Assignment Two
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{multicol}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.375in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+
+* Question One
+** Part A
+   The most obvious shortest trajectory is the King moving horizontally from A4
+   to H4, this derivation is shown in detail below.
+
+   #+BEGIN_EXAMPLE
+   MAP_{a4, King}     Map_{h4, King}     SUM
+   4 4 4 4 4 5 6 7    7 6 5 4 4 4 4 4    X X X X X X X X
+   3 3 3 3 4 5 6 7    7 6 5 4 3 3 3 3    X X X 7 7 X X X
+   2 2 2 3 4 5 6 7    7 6 5 4 3 2 2 2    X X 7 7 7 7 X X 
+   1 1 2 3 4 5 6 7    7 6 5 4 3 2 1 1    X 7 7 7 7 7 7 X
+   0 1 2 3 4 5 6 7    7 6 5 4 3 2 1 0    7 7 7 7 7 7 7 7
+   1 1 2 3 4 5 6 7    7 6 5 4 3 2 1 1    X 7 7 7 7 7 7 X
+   2 2 2 3 4 5 6 7    7 6 5 4 3 2 2 2    X X 7 7 7 7 X X
+   3 3 3 3 4 5 6 7    7 6 5 4 3 3 3 3    X X X 7 7 X X X
+   #+END_EXAMPLE
+
+   To increase the readability of the generation, some steps are repeated one
+   the /next_n/ and /f(l)/ functions has been resolved. The sets that are
+   selected in from each /next_n/ function are listed following the function.
+
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         S(a4, h4, 7) & \rightarrow^1 A(a4, h4, 7) \\
+         & \rightarrow^{2_{1}} a(a4)A(next_1(a4, 7), h4, f(7)) \\
+         & \rightarrow^{2_{1}} a(a4)A(b4, h4, 6) \\
+         & \rightarrow^{2_{2}} a(a4)a(b4)A(next_2(b4, 6), h4, f(6)) \\
+         & \rightarrow^{2_{2}} a(a4)a(b4)A(c4, h4, 5) \\
+         & \rightarrow^{2_{3}} a(a4)a(b4)a(c4)A(next_3(c4, 5), h4, f(5)) \\
+         & \rightarrow^{2_{3}} a(a4)a(b4)a(c4)A(d4, h4, 4) \\
+         & \rightarrow^{2_{4}} a(a4)a(b4)a(c4)a(d4)A(next_4(d4, 4), h4, f(4)) \\
+         & \rightarrow^{2_{4}} a(a4)a(b4)a(c4)a(d4)A(e4, h4, 3) \\
+         & \rightarrow^{2_{5}} a(a4)a(b4)a(c4)a(d4)a(e4)A(next(e4, 3), h4, f(3)) \\
+         & \rightarrow^{2_{5}} a(a4)a(b4)a(c4)a(d4)a(e4)A(f4, h4, 2) \\
+         & \rightarrow^{2_{6}} a(a4)a(b4)a(c4)a(d4)a(e4)a(f4)A(next_6(f4, 2), h4, f(2)) \\
+         & \rightarrow^{2_{6}} a(a4)a(b4)a(c4)a(d4)a(e4)a(f4)A(g4, h4, 1) \\
+         & \rightarrow^{2_{7}} a(a4)a(b4)a(c4)a(d4)a(e4)a(f4)a(g4)A(next_7(g4, 1), h4, f(1)) \\
+         & \rightarrow^{2_{7}} a(a4)a(b4)a(c4)a(d4)a(e4)a(f4)a(g4)A(h4, h4, 0) \\
+         & \rightarrow^{3} a(a4)a(b4)a(c4)a(d4)a(e4)a(f4)a(g4)a(h4) \\
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+   
+   The /move/, /st/, and /ST/ sets. The /st_1(x)/ set is the set of locations
+   reachable from /x/ in one move, thus the subscript is always one. The /ST_n(x_0)/
+   set is the set of locations reachable from the starting position, and where
+   $n = l_0 - l + 1$.
+
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         SUM = \{& a4, b3, b4, b5, c2, c3, c4, c5, c6, d1, d2, d3, d4, d5, d6, d7, \\
+                 & e1, e2, e3, e4, e5, e6, e7, f2, f3, f4, f5, f6, g3, g4, g5, h4\} \\
+         \\
+         st_1 = \{& a3, a5, b3, b4, b5\} \\
+         ST_1 = \{& a3, a5, b3, b4, b5\} \\
+         SUM \cap ST_1 \cap st_1 = Move_7 = \{& b3, b4, b5\}\;\text{(selected b4)} \\
+         \\
+         st_1 = \{& a3, a4, a5, b5, c5, c4, c3, b3\} \\
+         ST_2 = \{& c2, c3, c4, c5, c6\} \\
+         SUM \cap ST_2 \cap st_1 = Move_6 = \{& c3, c4, c5\}\;\text{(selected c4)} \\
+         \\
+         st_1 = \{& b4, b5, c5, d5, d4, d3, c3, b3\} \\
+         ST_3 = \{& d1, d2, d3, d4, d5, d6, d7\} \\
+         SUM \cap ST_3 \cap st_1 = Move_5 = \{& d3, d4, d5\}\;\text{(selected d4)} \\
+         \\
+         st_1 = \{& c4, c5, d5, e5, e4, e3, d3, c3\} \\
+         ST_4 = \{& e1, e2, e3, e4, e5, e6, e7\} \\
+         SUM \cap ST_4 \cap st_1 = Move_4 = \{& e3, e4, e5\}\;\text{(selected e4)} \\
+         \\
+         st_1 = \{& d4, d5, e5, f5, f4, f3, e3, d3\} \\
+         ST_5 = \{& f2, f3, f4, f5, f6\} \\
+         SUM \cap ST_5 \cap st_1 = Move_3 = \{& f3, f4, f5\}\;\text{(selected f4)} \\
+         \\
+         st_1 = \{& e4, e5, f5, g5, g4, g3, f3, e3\} \\
+         ST_6 = \{& g3, g4, g5\} \\
+         SUM \cap ST_6 \cap st_1 = Move_2 = \{& g3, g4, g5\}\;\text{(selected g4)} \\
+         \\
+         st_1 = \{& f4, f5, g5, h5, h4, h3, g3, f3\} \\
+         ST_7 = \{& h4\} \\
+         SUM \cap ST_7 \cap st_1 = Move_1 = \{& h4\}\;\text{(selected h4)}
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+
+   There are 393 trajectories from =a4= to =h4= and listing all of these would
+   be far too long.
+
+** Part B
+   There are 393 shortest trajectories from =a4= to =h4= for the King on a standard
+   chess board.
+
+** Part C
+   Yes, the grammar can generate all of these possible trajectories. In the
+   grammar, the /next_i/ function allows us to choose any of the locations that
+   are in the set $next = ST_1 \cap ST_2 \cap SUM$.
+
+** Part D
+*** Part One
+    #+BEGIN_EXAMPLE
+    MAP_{D2, Queen}    MAP_{B7, Queen}     SUM
+
+    2 2 2 1 2 2 2 2    1 1 1 2 2 2 2 2    X X X X X X X X
+    2 2 2 1 2 2 2 2    1 0 1 1 1 1 1 1    X E X 2 X X X X 
+    2 2 2 1 2 2 2 1    1 1 1 2 2 2 2 2    X X X X X X X X
+    1 2 2 1 2 2 1 2    2 1 2 1 2 2 2 2    X X X X X X X X
+    2 1 2 1 2 1 2 2    2 1 2 2 1 2 2 2    X 2 X X X X X X
+    2 2 1 1 1 2 2 2    2 1 2 2 2 1 2 2    X X X X X X X X
+    1 1 1 0 1 1 1 1    2 1 2 2 2 2 1 2    X 2 X S X X 2 X
+    2 2 1 1 1 2 2 2    2 1 2 2 2 2 2 1    X X X X X X X X
+    #+END_EXAMPLE
+
+**** First Trajectory
+    #+BEGIN_LaTeX
+      \begin{equation*}
+        \begin{split}
+          S & \rightarrow^1 \;A(D2, B7, 2) \\
+            & \rightarrow^{2_{1}} \;a(D2)A(next_1(D2, 2), B7, 1) \\
+            & \rightarrow^{2_{2}} \;a(D2)a(B2)A(next_2(B2, 4), B7, 0) \\
+            & \rightarrow^{3} \;a(D2)a(B2)a(B7)
+        \end{split}
+      \end{equation*}
+    #+END_LaTeX
+
+    On the second step, /next_1/ is an element from the set of $Move_2 = \{B2,
+    G2, B4, D7\}$. In this iteration, B2 was selected, thus $next_1 = B2$. On
+    the third step, /next_2/ is an element from the set of $Move_1 = \{B7\}$,
+    since B7 is our only option, $next_2 = B7$.
+
+**** Second Trajectory
+    #+BEGIN_LaTeX
+      \begin{equation*}
+        \begin{split}
+          S & \rightarrow^1 \;A(D2, B7, 2) \\
+            & \rightarrow^{2_{3}} \;a(D2)A(next_3(D2, 2), B7, 1) \\
+            & \rightarrow^{2_{4}} \;a(D2)a(G2)A(next_4(G2, 4), B7, 0) \\
+            & \rightarrow^{3} \;a(D2)a(G2)a(B7)
+        \end{split}
+      \end{equation*}
+    #+END_LaTeX
+
+    On the second step, /next_3/ is an element from the set of $Move_2 = \{B2,
+    G2, B4, D7\}$. In this iteration, G2 was selected, thus $next_3 = G2$. On
+    the third step, /next_4/ is an element from the set of $Move_1 = \{B7\}$,
+    since B7 is our only option, $next_4 = B7$.
+
+**** Third Trajectory
+    #+BEGIN_LaTeX
+      \begin{equation*}
+        \begin{split}
+          S & \rightarrow^1 \;A(D2, B7, 2) \\
+            & \rightarrow^{2_{5}} \;a(D2)A(next_5(D2, 2), B7, 1) \\
+            & \rightarrow^{2_{6}} \;a(D2)a(B4)A(next_6(B4, 4), B7, 0) \\
+            & \rightarrow^{3} \;a(D2)a(B4)a(B7)
+        \end{split}
+      \end{equation*}
+    #+END_LaTeX
+
+    On the second step, /next_5/ is an element from the set of $Move_2 = \{B2,
+    G2, B4, D7\}$. In this iteration, B4 was selected, thus $next_5 = B4$. On
+    the third step, /next_6/ is an element from the set of $Move_1 = \{B7\}$,
+    since B7 is our only option, $next_4 = B7$.
+
+**** Fourth Trajectory
+    #+BEGIN_LaTeX
+      \begin{equation*}
+        \begin{split}
+          S & \rightarrow^1 \;A(D2, B7, 2) \\
+            & \rightarrow^{2_{7}} \;a(D2)A(next_7(D2, 2), B7, 1) \\
+            & \rightarrow^{2_{8}} \;a(D2)a(D7)A(next_8(D7, 4), B7, 0) \\
+            & \rightarrow^{3} \;a(D2)a(D7)a(B7)
+        \end{split}
+      \end{equation*}
+    #+END_LaTeX
+
+    On the second step, /next_7/ is an element from the set of $Move_2 = \{B2,
+    G2, B4, D7\}$. In this iteration, D7 was selected, thus $next_7 = D7$. On
+    the third step, /next_8/ is an element from the set of $Move_1 = \{B7\}$,
+    since B7 is our only option, $next_8 = B7$.
+
+*** Part Two
+    #+BEGIN_EXAMPLE
+    MAP_{D2, Queen}    MAP_{B7, Queen}   SUM
+
+    2 2 2 2 1 2 2 2    2 2 2 2 1 2 2 1   X X X X X X X X
+    2 2 2 2 1 2 2 2    2 2 2 2 2 1 2 1   X X X X X X X X
+    1 2 2 2 1 2 2 2    2 2 2 2 2 2 1 1   X X X X X X X X
+    2 1 2 2 1 2 2 1    1 1 1 1 1 1 1 0   X X X X X X X 1
+    2 2 1 2 1 2 1 2    2 2 2 2 2 2 1 1   X X X X X X X X
+    2 2 2 1 1 1 2 2    2 2 2 2 2 1 2 1   X X X X X X X X
+    1 1 1 1 0 1 1 1    2 2 2 2 1 2 2 1   X X X X 1 X X X
+    2 2 2 1 1 1 2 2    2 2 2 1 2 2 2 1   X X X X X X X X
+    #+END_EXAMPLE
+
+    Notice that in this example that the target location is reachable from the
+    starting location in one move for the Queen.
+
+    #+BEGIN_LaTeX
+      \begin{equation*}
+        \begin{split}
+          S & \rightarrow^1 \;A(E2, H5, 1) \\
+            & \rightarrow^{2_{1}} \;a(E2)A(next_1(E2, 1), H5, 1) \\
+            & \rightarrow^{3} \;a(E2)a(H5)
+        \end{split}
+      \end{equation*}
+    #+END_LaTeX
+
+    On the second step, /next_1/ is an element from the set of $Move_1 =
+    \{H5\}$. Since H5 is our only option, $next_1 = H5$.
+* Question Two
+  #+BEGIN_EXAMPLE
+  MAP_{F2, King}     MAP_{C6, King}     Dock (8)
+  
+  9 8 7 6 6 6 6 6    2 2 2 2 2 3 4 5    X X X 8 8 X X X
+  8 8 7 6 5 5 5 5    2 1 1 1 2 3 4 5    X X 8 X X 8 X X
+  7 7 7 * * 4 4 4    2 1 0 * * 3 4 5    X 8 E * * X 8 X
+  6 6 6 * * * 3 3    2 1 1 * * * 4 5    8 X X * * * X 8
+  5 5 5 * * * 2 2    2 2 2 * * * 5 5    X X X * * * X X
+  5 4 * * * 1 1 2    3 3 * * * 6 6 6    8 X * * * X X 8
+  5 4 3 2 1 0 1 2    4 4 4 5 6 7 7 7    X 8 X X X S 8 X
+  5 4 3 2 1 1 1 2    5 5 5 5 6 7 8 8    X X 8 X X 8 X X
+  #+END_EXAMPLE
+
+  One example of a branch that goes on the left of the obstacles in detail. This
+  is one of several different possibilities.
+
+  #+BEGIN_LaTeX
+      \begin{equation*}
+        \begin{split}
+          S \rightarrow^{1} & A(f2, c6, 8) \\
+            \rightarrow^{2_{1}} & A(f2, med_1(f2, c6, 8), lmed_1(f2, c6, 8)) \\ 
+                                & A(med_1(f2, c6, 8), c6 l - lmed_1(f2, c6, 8)) \\
+            \rightarrow^{2_{1}} & A(f2, b2, 4)A(b2, c6, 4) \\
+            \rightarrow^{3_{2}} & a(f2)A(next_2(f2, 4), b2, f(4))A(b2, c6, 4) \\ 
+            \rightarrow^{3_{2}} & a(f2)A(e2, b2, 3)A(b2, c6, 4) \\ 
+            \rightarrow^{3_{3}} & a(f2)a(e2)A(next_3(e2, 3), b2, f(3))A(b2, c6, 4) \\ 
+            \rightarrow^{3_{3}} & a(f2)a(e2)A(d2, b2, 2)A(b2, c6, 4) \\ 
+            \rightarrow^{3_{4}} & a(f2)a(e2)a(d2)A(next_4(d2, 2) b2, f(2))A(b2, c6, 4) \\ 
+            \rightarrow^{3_{4}} & a(f2)a(e2)a(d2)A(c2, b2, 1)A(b2, c6, 4) \\ 
+            \rightarrow^{3_{5}} & a(f2)a(e2)a(d2)a(c2)A(next_5(c2, 1), b2, f(1))A(b2, c6, 4) \\ 
+            \rightarrow^{3_{5}} & a(f2)a(e2)a(d2)a(c2)A(b2, b2, 0)A(b2, c6, 4) \\ 
+            \rightarrow^{4} & a(f2)a(e2)a(d2)a(c2)a(b2)A(b2, c6, 4) \\
+            \rightarrow^{3_{6}} & a(f2)a(e2)a(d2)a(c2)a(b2)A(next_6(b2, 4), c6, f(4)) \\ 
+            \rightarrow^{3_{6}} & a(f2)a(e2)a(d2)a(c2)a(b2)A(b3, c6, 3) \\ 
+            \rightarrow^{3_{7}} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)A(next_7(b3, 3), c6, f(3)) \\ 
+            \rightarrow^{3_{7}} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)A(c4, c6, 2) \\ 
+            \rightarrow^{3_{8}} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)a(c4)A(next_8(c4, 2), c6, f(2)) \\
+            \rightarrow^{3_{8}} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)a(c4)A(c5, c6, 1) \\
+            \rightarrow^{3_{9}} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)a(c4)a(c5)A(next_9(c5, 1), c6, f(1)) \\
+            \rightarrow^{3_{9}} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)a(c4)a(c5)A(c6, c6, 0) \\
+            \rightarrow^{4} & a(f2)a(e2)a(d2)a(c2)a(b2)a(b3)a(c4)a(c5)a(c6) \\
+        \end{split}
+      \end{equation*}
+  #+END_LaTeX
+  
+  Below are the remaining trajectories, without the details.
+
+  #+BEGIN_LaTeX
+    \begin{equation*}
+      \begin{split}
+        & a(f2)a(e2)a(d2)a(c2)a(b3)a(a4)a(a5)a(b6)a(c6) \\
+        & a(f2)a(e1)a(d1)a(c1)a(b2)a(b3)a(c4)a(c5)a(c6) \\
+        & a(f2)a(g2)a(h3)a(h4)a(g5)a(f6)a(e7)a(d7)a(c6) \\
+        & a(f2)a(g3)a(g4)a(g5)a(g6)a(f7)a(c8)a(d7)a(c6) \\
+        & a(f2)a(g3)a(g4)a(g5)a(f6)a(e7)a(d8)a(c7)a(c6) \\
+        & a(f2)a(g3)a(g4)a(g5)a(f6)a(e7)a(d7)a(c7)a(c6)
+      \end{split}
+    \end{equation*}
+  #+END_LaTeX
+
+  One example of a branch that goes on the right of the obstacles in
+  detail. This is one of several different possibilities.
+
+  #+BEGIN_LaTeX
+    \begin{equation*}
+      \begin{split}
+        S \rightarrow^{1} & A(f2, c6, 8) \\
+          \rightarrow^{2_{1}} & A(f2, med_1(f2, c6, 8), lmed_1(f2, c6, 8)) \\ 
+                              & A(med_1(f2, c6, 8), c6 l - lmed_1(f2, c6, 8)) \\
+          \rightarrow^{2_{1}} & A(f2, h5, 3)A(h3, c6, 5) \\
+          \rightarrow^{3_{2}} & a(f2)A(next_2(f2, 3), h5, f(3))A(h5, c6, 5) \\ 
+          \rightarrow^{3_{2}} & a(f2)A(g3, h5, 2)A(h5, c6, 5) \\ 
+          \rightarrow^{3_{3}} & a(f2)a(g3)A(next_3(g3, 2), h5, f(2))A(h5, c6, 5) \\ 
+          \rightarrow^{3_{3}} & a(f2)a(g3)A(h4, h5, 1)A(h5, c6, 5) \\ 
+          \rightarrow^{3_{4}} & a(f2)a(g3)a(h4)A(next_4(h4, 1), h5, f(1))A(h5, c6, 5) \\
+          \rightarrow^{3_{4}} & a(f2)a(g3)a(h4)A(h5, h5, 0)A(h5, c6, 5) \\
+          \rightarrow^{4} & a(f2)a(g3)a(h4)a(h5)A(h5, c6, 5) \\
+          \rightarrow^{3_{5}} & a(f2)a(g3)a(h4)a(h5)A(next_4(h4, 5), c6, f(5)) \\ 
+          \rightarrow^{3_{5}} & a(f2)a(g3)a(h4)a(h5)A(g6, c6, 4) \\ 
+          \rightarrow^{3_{6}} & a(f2)a(g3)a(h4)a(h5)a(g6)A(next_5(g6, 4), c6, f(4)) \\ 
+          \rightarrow^{3_{6}} & a(f2)a(g3)a(h4)a(h5)a(g6)A(f7, c6, 3) \\
+          \rightarrow^{3_{7}} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)A(next_6(f7, 3), c6, f(3)) \\
+          \rightarrow^{3_{7}} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)A(e7, c6, 2) \\
+          \rightarrow^{3_{8}} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)a(e7)A(next_7(e7, 2), c6, f(2)) \\
+          \rightarrow^{3_{8}} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)a(e7)A(d7, c6, 1) \\
+          \rightarrow^{3_{9}} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)a(e7)a(d7)A(next_8(d7, 1), c6, f(1)) \\
+          \rightarrow^{3_{9}} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)a(e7)a(d7)A(c6, c6, 0) \\
+          \rightarrow^{4} & a(f2)a(g3)a(h4)a(h5)a(g6)a(f7)a(e7)a(d7)a(c6)
+      \end{split}
+    \end{equation*}
+  #+END_LaTeX
+
+* Question Three
+** Part A
+   Below are the shortest and admissable trajectories for the Queen from =c2= to
+   =b4=.
+
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         & a(c2)a(c4)a(b4) \\
+         & a(c2)a(c5)a(b4) \\
+         & a(c2)a(a4)a(b4) \\
+         & a(c2)a(e2)a(b4) \\
+         & a(c2)a(e4)a(b4)
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+
+** Part B
+   All of these trajectories are of length two. There are no other trajectories
+   between these points, otherwise they would be included in the docking set.
+
+** Part C
+   The grammar can generate all of the trajectories for length one and two since
+   all locations on the chess board are reachable within two moves for the Queen.
+
+** Part D
+   The grammar cannot generate trajectories all of the trajectories greater than
+   length two. This is because the grammar uses the DOCK set to determine
+   docking location. Since all locations can be reached by the Queen within two
+   moves. \\
+
+   The grammar would need to be modified to allowing the docking set to include
+   locations that are greater than the minimum reachability.

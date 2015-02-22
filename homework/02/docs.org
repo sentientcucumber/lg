@@ -12,7 +12,7 @@
 #+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
 
 * Question One
-** Derivation
+** Part A
    You will find the derivation tree below for the modified Missionaries and
    Cannibals problem, with four membors of each party. A small problem arises
    since the boat's capacity is /n - 1/, where /n/ is the members of one party,
@@ -23,6 +23,7 @@
    cannibals and missionaries are on the starting side of the river, thus /c =
    0/ and /m = 0/.
 
+   #+BEGIN_LaTeX
    \begin{equation}
    \begin{split}
    S(c, m) \rightarrow^1 & A(1,1) \\
@@ -31,43 +32,121 @@
    \rightarrow^2 & p(1,1)p(3,0)p(2,2)A(1,3) \\
    \rightarrow^2 & p(1,1)p(3,0)p(2,2)p(1,3)A(2,3) \\
    \rightarrow^2 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)A(3,3) \\
-   \rightarrow^2 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)p(3,3)A(3,4) \\
-   \rightarrow^2 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)p(3,3)p(3,4)A(4,4) \\
-   \rightarrow^3 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)p(3,3)p(3,4)p(4,4) \\
+   \rightarrow^2 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)p(3,3)A(2,4) \\
+   \rightarrow^2 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)p(3,3)p(2,4)A(4,4) \\
+   \rightarrow^3 & p(1,1)p(3,0)p(2,2)p(1,3)p(2,3)p(3,3)p(2,4)p(4,4) \\
    \end{split}
    \end{equation}
+   #+END_LaTeX
 
-** Grammar
+** Part B
    Below is the general controlled grammar for the Missionaries and Cannibals
-   problem. Most of the changes occur in the functions and predicates.
+   problem. Most of the changes occur in the functions and predicates. \\
 
    Let /c/ be the number of cannibals and /m/ be the number of missionaries on
    the target side of the river, and /n/ be the number of members in each
-   party. If we assume the capacity of the boat is also /n/, then much of the
-   problem stays the same.
+   party. If we assume the capacity of the boat is also /n - 1/, then much of
+   the problem stays the same.
 
    | L | Q   | Kernel                                        | F_T         | F_F         |
    | 1 | Q_1 | S(c,m) \rightarrow A(c + 1, m + 1)            | {2}         | \varnothing |
    | 2 | Q_2 | A(c,m) \rightarrow p(c, m)A(f_1(c,m), f_2(m)) | {2}         | {3}         |
    | 3 | Q_3 | A(c,m) \rightarrow p(c, m)                    | \varnothing | \varnothing |
 
-   - Predicates
-     - /Q_1/ = true
-     - /Q_2(c, m)/ = true if $(c > 0 \wedge c < n) \vee (m > 0 \wedge m < n)$
-     - /Q_3(c, m)/ = false if $(c = n \wedge m = n) \vee ((c > m) \vee (3 - c) >
-       (3 - m))$
-   - Functions
-     - The functions stay the same as well, only replacing /n/ where there are /3/s.
+   Or, we could simply assume the boat can hold 2n, thus all missionaries and
+   cannibals could move at once. 
+
+*** Predicates
+    Below are the predicates for the Missionaries and Cannibals problem. It is
+    very similar to the fixed problem provided in class. However, since many of
+    the functions relied on the limit of /3/, ever /3/ have been replaced with /n/.
+
+    #+BEGIN_LaTeX
+      Q_1 = T \\
+      \begin{displaymath}
+        Q_2(c, m) = \left\{
+        \begin{array}{ll}
+          T & (c > 0 \wedge c < n) \vee (m > 0 \wedge m < n) \\
+          F & (c = n \wedge m = n) \vee ((c > m) \vee (n - c) > (n - m))
+        \end{array}
+        \right.
+        \\
+        Q_3(c,m) = \left\{
+        \begin{array}{ll}
+          T & ((c = n) \wedge (m = n))
+        \end{array}
+        \right.
+      \end{displaymath}
+    #+END_LaTeX
+
+*** Functions
+    Again, this is very similar to the functions provided for the example in
+    class, with every /3/ being replaced by /n/.
+#+BEGIN_EXAMPLE
+  f1(c, m)
+     if (c = 1) and (m = 1)
+        f1(c, m) = c + 2
+     else
+        if (c != 1) and (m != n)
+           f1(c, m) = c - 1
+        else
+           f1(c, m) = c + 1
+
+  f2(m)
+     if (m = 0)
+        f2(m) = m + 2
+     if (m = 1)
+        f2(m) = m - 1
+     if (m = n)
+        f2(m) = m
+     else
+        f2(m) = m + 1
+#+END_EXAMPLE
 
 * Question Two
-** Grammar
-   Below is a derivation for the Tower of Hanoi with four pivots and /n/ disks.
+** Part A
+   Below is a derivation for the Tower of Hanoi with four pivots and /n/
+   disks. Much of the grammar and logic is still the same, the first three
+   pivots are used to manipulate the disks until the largest disk can be moved
+   to the pivot.
 
    | L | Q   | Kernel                                                                             | F_T | F_F         |
    | 1 | Q_1 | S(n,x,y) \rightarrow A(n,x,y)                                                      | {2} | \varnothing |
    | 2 | Q_2 | A(n,x,y) \rightarrow A(f_1(n),x,f_2(x,y,z)),p(n,x,y)A(f_1(n),f_2(x,y,z))           | {2} | {3}         |
    | 3 | Q_3 | A(n,x,y) \rightarrow p(n,x,y)                                                      | {2} | \varnothing |
-
    
-** Derivation
+*** Predicates
+    Below are the predicates for the Tower of Hanoi problem. These are the same
+    as the predicates provided in class.
+
+    #+BEGIN_LaTeX
+      Q_1 = T \\
+      \begin{displaymath}
+        Q_2(c, m) = \left\{
+        \begin{array}{ll}
+          T & n > 1 \\
+          F & n = 1
+        \end{array}
+        \right.
+        \\
+        Q_3(c,m) = \left\{
+        \begin{array}{ll}
+          T & n = 1 \\
+          F & n > 1
+        \end{array}
+        \right.
+      \end{displaymath}
+    #+END_LaTeX
+
+*** Functions
+    Below are the functions for the Tower of Hanoi problem. Again, they are
+    similar the functions provided in class. Differences can be seen in 
+    
+    #+BEGIN_EXAMPLE
+    f1(n) = n - 1
+
+    f2(x, y, z) yields the value from {a, b, c, d} - {x, y, z}, 
+                where the values of x, y, and z are from {a, b, c, d}
+    #+END_EXAMPLE
+** Part B
    
