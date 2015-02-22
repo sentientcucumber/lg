@@ -1,4 +1,5 @@
 node_modules/
+multimedia/
 *.dia
 *.png
 *.tex
