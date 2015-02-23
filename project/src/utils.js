@@ -25,13 +25,13 @@
   // Checks to see if a file was provided, and if so, does the file contain
   // the required information. If so, a JSON object is returned to be used
   // in subsequent calls.
-  exports.validateRun = function () {
-    var file = process.argv[2];
+  exports.validateParameter = function (param) {
+    var file = process.argv[param];
 
     if (file) {
       return validateFile(file);
     } else {
-      console.error("Usage: npm run <input file>\n");
+      console.error("Usage: npm run project <chess file> <grammar file> <maps file>");
 
       return null;
     }
@@ -43,7 +43,7 @@
     var inputFilename = inputPath.replace('input', 'output');
     var filename = inputFilename + '-output.json';
 
-    fs.appendFile(filename, JSON.stringify(data, null, 2), function (err) {
+    fs.writeFile(filename, JSON.stringify(data, null, 2), function (err) {
       if (err) {
         console.log('An error occurred while writing to file ' + filename);
         console.log(err);
@@ -51,5 +51,5 @@
         console.log(filename + ' written successfully!');
       }
     });
-};
+  };
 })();

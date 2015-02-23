@@ -30,88 +30,91 @@
    #+END_SRC
 
 ** Run
-   After the modules are installed, run the following command to run the
-   project.
+   After the modules are installed, you may select from the following run
+   commands to execute.
 
-   #+BEGIN_SRC sh
-        npm run project res/chess.json
-   #+END_SRC
+*** Maps
+    Run the program to generate a move and reachability board for an array of pieces.
+
+    #+BEGIN_SRC sh
+      npm run maps res/input/2d-chess-pieces.json
+    #+END_SRC
+
+*** Trajectories
+    Run the program to generate trajectories for a given piece.
+
+    #+BEGIN_SRC sh
+      npm run trajectories res/input/2d-chess-king.json
+    #+END_SRC
 
 ** Input
-   The ~chess.json~ file provided contains all chess pieces. Below is a small
-   snippet of the file.
+   This section outlines the various files the program can consume.
 
-   #+BEGIN_SRC json
-     {
-         "board": {
-             "xMax": 8,
-             "yMax": 8,
-             "zMax": null,
-             "obstacles": [ ]
-         },
-         "pieces": [
-             {
-                 "piece": "King",
-                 "xCoordinate": 2,
-                 "yCoordinate": 7,
-                 "reachability": [
-                     {
-                         "condition-1": "| y1 - x1 | <= 1"
-                     },
-                     {
-                         "condition-1": "| y2 - x2 | <= 1"
-                     }
-                 ]
-             }
-         ]
-     }
-   #+END_SRC
+*** Board and Pieces
+    /See =res/input/2d-chess-pieces.json= for sample input for all chess
+    pieces./
+    
+    Board and Pieces are the most basic type of input the program consumes. The
+    file contains information for one board (which stays constant for all
+    pieces) and any number of pieces. 
 
-   As you can see, it contains information about the board and any number of
-   pieces.
+    Board and Pieces input files should be provided when executing the
+    following:
+    - Maps
+    - Trajectories
 
-*** Board
-    Below are some notes regarding the fields for the board.
+*** Grammar
+    /See =res/input/grammar.json= for sample input for all chess
+    pieces./
 
-    - The board is 1-based and assumes the min is '1' and thus not required.
-    - Obstacles are an array of points that cannot be reached by any
-      piece. Below is a sample of an obstacle object that would cause the point
-      (3,2) to be unreachable..
+    Grammar files define a controlled grammar for the program to use.
 
-      #+BEGIN_SRC js
-        {
-            "x": 3,
-            "y": 2
-        }
-      #+END_SRC
-    - The board information stays constant when reading each piece.
-
-*** Pieces
-    Below are some notes regarding the fields for pieces.
-
-    - ~x~ and ~y~ are the starting coordinates for the given piece.
-    - Reachability is an array of conditions that are used to determine if a
-      given cell is reachable. For each reachability, all conditions must be met
-      in order for it to be reachable. However, not all reachabilities must be
-      hold true for the cell to be reachable.
-
+    Grammar input files should be provided when executing the following:
+    - Trajectories
+    
 ** Output
-   Below is sample output for a King.
+   This section outline the various output the program will produce.
 
-   #+BEGIN_EXAMPLE
-   7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-   7 6 6 6 6 6 6 6 6 6 6 6 6 6 7
-   7 6 5 5 5 5 5 5 5 5 5 5 5 6 7
-   7 6 5 4 4 4 4 4 4 4 4 4 5 6 7
-   7 6 5 4 3 3 3 3 3 3 3 4 5 6 7
-   7 6 5 4 3 2 2 2 2 2 3 4 5 6 7
-   7 6 5 4 3 2 1 1 1 2 3 4 5 6 7
-   7 6 5 4 3 2 1 0 1 2 3 4 5 6 7
-   7 6 5 4 3 2 1 1 1 2 3 4 5 6 7
-   7 6 5 4 3 2 2 2 2 2 3 4 5 6 7
-   7 6 5 4 3 3 3 3 3 3 3 4 5 6 7
-   7 6 5 4 4 4 4 4 4 4 4 4 5 6 7
-   7 6 5 5 5 5 5 5 5 5 5 5 5 6 7
-   7 6 6 6 6 6 6 6 6 6 6 6 6 6 7
-   7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
-   #+END_EXAMPLE
+*** Maps
+    An output file will be created in =res/output= with the same name as your
+    input file with =output= appended to it. The file is an array of objects,
+    each entry corresponds to a piece in the pieces array in the input
+    file. Below is a small example of an output.
+
+    #+BEGIN_SRC json
+      [
+          {
+              "piece": "King",
+              "moveBoard": [
+                  "3 3 3 3 4 5 6 7",
+                  "2 2 2 3 4 5 6 7",
+                  "1 1 2 3 4 5 6 7",
+                  "0 1 2 3 4 5 6 7",
+                  "1 1 2 3 4 5 6 7",
+                  "2 2 2 3 4 5 6 7",
+                  "3 3 3 3 4 5 6 7",
+                  "4 4 4 4 4 5 6 7"
+              ],
+              "reachBoard": [
+                  "7 7 7 7 7 7 7 7 7 7 7 7 7 7 7",
+                  "7 6 6 6 6 6 6 6 6 6 6 6 6 6 7",
+                  "7 6 5 5 5 5 5 5 5 5 5 5 5 6 7",
+                  "7 6 5 4 4 4 4 4 4 4 4 4 5 6 7",
+                  "7 6 5 4 3 3 3 3 3 3 3 4 5 6 7",
+                  "7 6 5 4 3 2 2 2 2 2 3 4 5 6 7",
+                  "7 6 5 4 3 2 1 1 1 2 3 4 5 6 7",
+                  "7 6 5 4 3 2 1 0 1 2 3 4 5 6 7",
+                  "7 6 5 4 3 2 1 1 1 2 3 4 5 6 7",
+                  "7 6 5 4 3 2 2 2 2 2 3 4 5 6 7",
+                  "7 6 5 4 3 3 3 3 3 3 3 4 5 6 7",
+                  "7 6 5 4 4 4 4 4 4 4 4 4 5 6 7",
+                  "7 6 5 5 5 5 5 5 5 5 5 5 5 6 7",
+                  "7 6 6 6 6 6 6 6 6 6 6 6 6 6 7",
+                  "7 7 7 7 7 7 7 7 7 7 7 7 7 7 7"
+              ]
+          }
+      ]
+    #+END_SRC
+
+*** Trajectories 
+    Currently, there is no output for this.

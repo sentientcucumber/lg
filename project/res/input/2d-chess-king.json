@@ -1,0 +1,24 @@
+{
+    "board": {
+        "xMax": 8,
+        "yMax": 8,
+        "obstacles": [ ]
+    },
+    "pieces": [
+        {
+            "piece": "King",
+            "startX": 1,
+            "startY": 5,
+            "endX": 8,
+            "endY": 5,
+            "reachability": [
+                {
+                    "condition-1": "| y1 - x1 | <= 1"
+                },
+                {
+                    "condition-1": "| y2 - x2 | <= 1"
+                }
+            ]
+        }
+    ]
+}

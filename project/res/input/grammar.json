@@ -42,7 +42,7 @@
         },
         "5": {
             "lhs": "A(x, y, l)",
-            "rhs": "",
+            "rhs": null,
             "conditions": [
                 "y != y0"
             ],
