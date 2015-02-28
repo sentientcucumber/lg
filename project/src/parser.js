@@ -1,109 +1,312 @@
-(function() {
-  'use-strict';
+(function () {
+  'use strict';
 
   // Dependencies
-  var utils = require('./utils.js'),
+  var boardUtils = require('./board.js'),
       _ = require('underscore');
 
-  // Symbol object, superclass of nonterminal and terminal
-  function Symbol (type, name) {
+  // Grammar objects //////////////////////////////////////////////////////////
+
+  // Symbol object, superclass of NonTerminal and Terminal
+  var Symbol = function (type, name) {
     this.type = type;
     this.name = name;
-    this.args = new Array();
-
-    for (var a = 2; a < arguments.length; a++) {
-      if (arguments.hasOwnProperty(a)) {
-        this.args.push(arguments[a]);
-      }
-    }
   };
 
-  Symbol.prototype.display = function () {
-    return this.name + '(' + this.args.join(', ') + ')';
+  Symbol.prototype.toString = function () {
+    return this.name + '(' + this.x + ')';
   };
 
   // Nonterminal object, subclass of Symbol
-  var NonTerminal = function (name) {
-    this.args = new Array();
+  var NonTerminal = function (name, x, y, len) {
+    this.x = x;
+    this.y = y;
+    this.len = len;
 
-    for (var a = 1; a < arguments.length; a++) {
-      if (arguments.hasOwnProperty(a)) {
-        this.args.push(arguments[a]);
-      }
-    }
-
-    Symbol.call(this, "NONTERMINAL", name, this.args);
+    Symbol.call(this, 'NONTEMINAL', name, x, y, len);
   };
 
   NonTerminal.prototype = Object.create(Symbol.prototype);
 
+  NonTerminal.prototype.toString = function () {
+    return this.name + '(' + this.x + ', ' + this.y + ', ' + this.len + ')';
+  };
+
   // Terminal object, subclass of Symbol
-  function Terminal (name) {
-    this.args = new Array();
+  var Terminal = function (name, x) {
+    this.x = x;
 
-    for (var a = 1; a < arguments.length; a++) {
-      if (arguments.hasOwnProperty(a)) {
-        this.args.push(arguments[a]);
-      }
+    Symbol.call(this, 'TERMINAL', name, x);
+  };
+
+  Terminal.prototype = Object.create(Symbol.prototype);
+
+  // Grammar functions ////////////////////////////////////////////////////////
+  var mapping = function (start, end, moves) {
+    var rowLen = moves[0].length;
+
+    var startDist = moves[(7 - (start.y - 1))][start.x - 1],
+        endDist = moves[(7 - (end.y - 1))][end.x - 1];
+
+    return Math.abs(endDist - startDist);
+  };
+
+  var medFn = function (parser, x, y, len) {
+    var dock = generateDockSet(parser, len);
+
+    if (dock.length < 1) {
+      return x;
+    } else {
+      return _.sample(dock);
     }
+  };
 
-    Symbol.call(this, "TERMINAL", name, this.args);    
-  }
+  var lmedFn = function (x, y, moves) {
+    return mapping(x, y, moves);
+  };
 
-  var printState = function () {
-    parser.state.forEach(function (entry) {
-      console.log(entry.display());
+  var nextFn = function (parser, x, y, len) {
+    var sum = generateDockSet(parser, parser.len);
+
+    var start = {
+      "xMax": parser.rowLen,
+      "yMax": parser.colLen,
+      "obstacles": [ ],
+      "start": translateLinearCoordinate(x, parser.rowLen)
+    };
+
+    start.start.x--;
+    start.start.y--;
+
+    var tmp = boardUtils.generateBoard(start, start.start);
+    var st1 = boardUtils.populateBoard(tmp, parser.piece);
+
+    var results = [ ];
+
+    st1.forEach(function (row, i) {
+      var tmp = row.split(' ');
+
+      tmp.forEach(function (cell, j) {
+        if (cell == 1)
+          results.push(64 - ((8 * i + (7 - j))));
+      });
     });
+
+    var end = {
+      "xMax": parser.rowLen,
+      "yMax": parser.colLen,
+      "obstacles": [ ],
+      "start": translateLinearCoordinate(y, parser.rowLen)
+    };
+
+    end.start.x--;
+    end.start.y--;
+
+    var tmp2 = boardUtils.generateBoard(end, end.start);
+    var st2 = boardUtils.populateBoard(tmp2, parser.piece);
+    var results2 = [ ];
+
+    st2.forEach(function (row, i) {
+      var tmp = row.split(' ');
+
+      tmp.forEach(function (cell, j) {
+        if (cell == len - 1)
+          results2.push(64 - ((8 * i + (7 - j))));
+      });
+    });
+
+    return _.sample(_.intersection(sum, results, results2));;
   };
 
-  // Determine the linear coordinates for a given point
-  var linearCoordinate = function (point, board) {
-    var xMax = board.xMax;
+  // Helper functions /////////////////////////////////////////////////////////
+  var generateDockSet = function (parser, len) {
+    var results = [ ];
 
-    return point.y * xMax - (xMax - point.x);
+    parser.startBoard.forEach(function (row, i) {
+      row.forEach(function (col, j) {
+        var val = Number(parser.startBoard[i][j]) + Number(parser.endBoard[i][j]);
+
+        if (val === (len))
+          results.push(64 - ((8 * i + (7 - j))));
+      });
+    });
+
+    return results;
   };
 
-  // Resolves any MAP functions
-  var MapResult = function (start, end, piece) {
-    var map = _.find(moveMaps, function (entry) {
-      return entry.piece === piece;
-    }).moveBoard;
-    
-    
+  // Translates linear coordinates to graph notation
+  var translateLinearCoordinate = function (point, rowLen) {
+    return {
+      "x": (point % rowLen === 0) ? rowLen : point % rowLen,
+      "y": Number(Math.ceil(point / rowLen))
+    };
   };
 
-  // Checks to see if a condition is met
-  var checkConditions = function (conditions, start, end, piece, len) {
-    return conditions.every(function (cond) {
-      var map;
+  // Translates graph notation to linear coordinates
+  var translateChessCoordinate = function (point, rowLen) {
+    return point.y * rowLen - (rowLen - point.x);
+  };
 
-      if (cond.indexOf('MAP') != -1) {
-        map = MapResult(start, end, piece.piece);
+  // Returns the first index that matches the name
+  var findNonTerminal = function (stack, name) {
+    return stack.map(function (entry) {
+      return entry.name;
+    }).indexOf(name);
+  };
+
+  // Productions //////////////////////////////////////////////////////////////
+  // The productions for admissible trajectories of degree two
+  var one = function (parser) {
+    var start = {
+      "x": parser.piece.startX,
+      "y": parser.piece.startY
+    };
+
+    var end = {
+      "x": parser.piece.endX,
+      "y": parser.piece.endY
+    };
+
+    var x = translateChessCoordinate(start, parser.rowLen),
+        y = translateChessCoordinate(end, parser.rowLen);
+
+    // Push the starting symbol onto the stack
+    parser.state.push(new NonTerminal('S', x, y, parser.len));
+
+    // Check to see if the predicates have been met
+    if (mapping(start, end, parser.startBoard) <= parser.len &&
+        parser.len < (2 * parser.spaces)) {
+
+      var index = findNonTerminal(parser.state, 'S');
+
+      if (index > -1) {
+        parser.state[index] = new NonTerminal('A', x, y, parser.len);
+        console.log('one -> ' + parser.state);
+        two(parser);
+      } else {
+        console.error('Expected to find S symbol, but none was found');
       }
-    });
+    } else {
+      console.error('Production one failed. No productions to apply');
+    }
   };
 
-  // Applies a given production
-  var applyProduction = function (number, piece, productions, board, len) {
-    var start = linearCoordinate({ "x": piece.startX, "y": piece.startY }, board),
-        end = linearCoordinate({ "x": piece.endX, "y": piece.endY }, board);
+  var two = function (parser) {
+    var index = findNonTerminal(parser.state, 'A');
 
-    var production = productions[number],
-        validProduction = checkConditions(production.conditions, start, end, piece, len);
+    // First check to see if a symbol exists
+    if (index > -1) {
+      var current = parser.state[index],
+          x = translateLinearCoordinate(current.x, parser.rowLen),
+          y = translateLinearCoordinate(current.y, parser.rowLen);
 
-    // parser.state.push(new NonTerminal('S', start, end, len));
-    // printState();
+      if (mapping(x, y, parser.startBoard) !== current.len) {
+        var med = medFn(parser, current.x, current.y, current.len),
+            lmed = lmedFn(x, y, parser.startBoard);
+
+        var first = new NonTerminal('A', current.x, med, lmed);
+        var second = new NonTerminal('A', med, current.y, current.len - lmed);
+
+        parser.state.splice(index - 1, 1, first, second);
+        console.log('two -> ' + parser.state);
+        three(parser);
+      } else {
+        three(parser);
+      }
+    } else {
+      console.error('Expected to find A symbol, but none were found.');
+    }
   };
 
-  // Initializes the starting point and then begins to apply the grammar
-  exports.applyGrammar = function (piece, len, productions, board, maps) {
-    // Setup the state of the parser
-    parser = new Object();
-    parser.state = new Array();
+  var three = function (parser) {
+    var index = findNonTerminal(parser.state, 'A');
 
-    // Read in the chess maps
-    moveMaps = maps;
+    if (index > -1) {
+      var current = parser.state[index],
+          x = translateLinearCoordinate(current.x, parser.rowLen),
+          y = translateLinearCoordinate(current.y, parser.rowLen);
 
-    applyProduction(1, piece, productions, board, len);
+      console.log(current.len);
+
+      if (current.x &&
+          mapping(x, y, parser.startBoard) === current.len &&
+          parser.len >= 1) {
+
+        var terminal = new Terminal('a', current.x),
+            next = nextFn(parser, current.x, current.y, current.len),
+            nonterminal = new NonTerminal('A', next, current.y, --current.len);
+
+        parser.state.splice(index, 1, terminal, nonterminal);
+        console.log('three -> ' + parser.state);
+        three(parser);
+      } else {
+        console.log('false');
+        four(parser);
+      }
+    } else {
+      console.error('Expected to find A symbol, but none were found.');
+    }
+  };
+
+  // Combines productions four and five together
+  var four = function (parser) {
+    var index = findNonTerminal(parser.state, 'A');
+
+    var current = parser.state[index],
+        x = translateLinearCoordinate(current.x, parser.rowLen),
+        y = translateLinearCoordinate(current.y, parser.rowLen);
+
+    if (!x && parser.piece.endX === y.x && parser.piece.endY === y.y) {
+      parser.state.splice(index, 1, new Terminal('a', current.x));
+
+      three(parser);
+    } else {
+      parser.state.splice(index, 1);
+
+      console.log(parser.state.join(' '));
+    }
+  };
+
+  // Generates a starting board based on the starting position
+  var generateStartBoard = function (piece, board) {
+    var start = {
+      "x": piece.startX - 1,
+      "y": piece.startY- 1
+    };
+
+    var startBoard = boardUtils.generateBoard(board, start);
+    return boardUtils.populateBoard(startBoard, piece);
+  };
+
+  // Generates an ending board based on the ending postion
+  var generateEndBoard = function (piece, board) {
+    var end =  {
+      "x": piece.endX - 1,
+      "y": piece.endY - 1
+    };
+
+    var endBoard = boardUtils.generateBoard(board, end);
+    return boardUtils.populateBoard(endBoard, piece);
+  };
+
+  // Creates a Parser object
+  exports.Parser = function (piece, board, len) {
+    // Holds the state for the parser
+    this.state = new Array();
+
+    this.piece = piece;
+    this.len = len;
+
+    var startBoard = generateStartBoard(piece, board);
+    this.startBoard = boardUtils.transformMoves(startBoard);
+
+    var endBoard = generateEndBoard(piece, board);
+    this.endBoard = boardUtils.transformMoves(endBoard);
+
+    this.spaces = board.xMax * board.yMax - board.obstacles.length;
+    this.rowLen = board.xMax;
+    this.colLen = board.yMax;
+
+    one(this);
   };
 })();

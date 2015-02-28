@@ -25,7 +25,7 @@
   // Checks to see if a file was provided, and if so, does the file contain
   // the required information. If so, a JSON object is returned to be used
   // in subsequent calls.
-  exports.validateParameter = function (param) {
+  exports.validateFile = function (param) {
     var file = process.argv[param];
 
     if (file) {

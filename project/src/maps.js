@@ -5,50 +5,47 @@
   var utils = require('./utils.js');
   var board = require('./board');
 
-  var input = utils.validateParameter(2);
+  var input = utils.validateFile(2);
   var output = new Array();
 
   if (input) {
     input.pieces.forEach(function (piece) {
 
-      var chessInfo = {};
-      chessInfo.n = input.board.xMax;
-      chessInfo.m = input.board.yMax;
-      chessInfo.z = input.board.zMax;
-      chessInfo.start = {
-	"x": piece.startX - 1,
-	"y": piece.startY - 1,
-	"z": piece.startZ - 1
+      var moveInfo = {};
+
+      moveInfo.xMax = input.board.xMax;
+      moveInfo.yMax = input.board.yMax;
+      moveInfo.zMax = input.board.zMax;
+      moveInfo.start = {
+	"x": piece.startX,
+	"y": piece.startY,
+	"z": piece.startZ
       };
 
       var reachInfo = {};
-      reachInfo.n = input.board.xMax * 2 - 1;
-      reachInfo.m = input.board.yMax * 2 - 1;
-      reachInfo.z = input.board.zMax * 2 - 1;
+
+      reachInfo.xMax = input.board.xMax * 2 - 1;
+      reachInfo.yMax = input.board.yMax * 2 - 1;
+      reachInfo.zMax = input.board.zMax * 2 - 1;
       reachInfo.start = {
 	"x": Math.floor(reachInfo.n / 2),
 	"y": Math.floor(reachInfo.m / 2),
 	"z": Math.floor(reachInfo.z / 2)
       };
 
-      var chessBoard = board.generateBoard(input.board,
-	  				   chessInfo.n,
-	  				   chessInfo.m,
-					   chessInfo.z,
-	  				   chessInfo.start),
-	  reachabilityBoard = board.generateBoard(input.board,
-	  					  reachInfo.n,
-	  					  reachInfo.m,
-	  					  reachInfo.z,
-	  					  reachInfo.start);
+      var moveBoard = board.generateBoard(input.board, moveInfo.start),
+	  reachabilityBoard = board.generateBoard(input.board, reachInfo.start);
       
-      var outputChessBoard = board.populateBoard(chessBoard, piece);
+      var outputMoveBoard = board.populateBoard(moveBoard, piece);
       var outputReachBoard = board.populateBoard(reachabilityBoard, piece);
 
       var data = {};
+
       data.piece = piece.piece;
-      data.moveBoard = outputChessBoard;
+      data.moveBoard = outputMoveBoard;
       data.reachBoard = outputReachBoard;
+
+      console.log(JSON.stringify(data, null, 2));
 
       output.push(data);
     });

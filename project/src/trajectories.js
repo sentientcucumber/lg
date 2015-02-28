@@ -1,21 +1,17 @@
 (function() {
-  'use-strict';
+  'use strict';
 
   var parser = require('./parser.js'),
-      utils = require('./utils.js'),
-      board = require('./board.js');
+      utils = require('./utils.js');
 
-  var game = utils.validateParameter(2),
-      grammar = utils.validateParameter(3),
-      maps = utils.validateParameter(4);
+  var input = utils.validateFile(2);
 
-  if (game && grammar && maps) {
-    var pieces = game.pieces,
-        len = 7,
-        productions = grammar.productions;
+  if (input) {
+    var len = 8;
+    var pieces = input.pieces;
 
     pieces.forEach(function (piece) {
-      parser.applyGrammar(piece, len, productions, game.board, maps);
+      var trajectory = parser.Parser(piece, input.board, len);
     });
   } else {
     console.log("Invalid file, exiting program.");

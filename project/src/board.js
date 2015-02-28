@@ -2,7 +2,7 @@
 // Contains functions used for creating and manipulating boards
 
 (function() {
-  'use-strict';
+  'use strict';
 
   // Dependencies
   var mathjs = require('mathjs');
@@ -16,17 +16,17 @@
 
   // Generate a board of n x m, if a seed is provided, a starting point (0)
   // will be placed at the coordinates
-  exports.generateBoard = function (board, n, m, z, seed) {
+  exports.generateBoard = function (board, seed) {
     var rows = [];
 
-    for (var i = 0; i < n; i++) {
+    for (var i = 0; i < board.xMax; i++) {
       var cols = [];
 
-      for (var j = 0; j < m; j++) {
-        if (z) {
+      for (var j = 0; j < board.yMax; j++) {
+        if (board.zMax) {
           var tmp = [];
 
-          for (var k = 0; k < z; k++) {
+          for (var k = 0; k < board.zMax; k++) {
             tmp.push(global.UNDISCOVERED);
           }
 
@@ -39,26 +39,22 @@
       rows.push(cols);
     }
 
-    if (seed) {
-      if (z) {
-        rows[seed.y][seed.x][seed.z] = 0;
-      } else {
-        rows[seed.y][seed.x] = 0;
-      }
+    if (seed.z) {
+      rows[seed.y][seed.x][seed.z] = 0;
+    } else {
+      rows[seed.y][seed.x] = 0;
     }
 
     board.obstacles.forEach(function (obstacle) {
-      rows[obstacle.y][obstacle.x] = global.UNREACHABLE;
+      rows[obstacle.y - 1][obstacle.x - 1] = global.UNREACHABLE;
     });
 
-    var info = {};
-
-    info.rows = rows;
-    info.xLimit = n;
-    info.yLimit = m;
-    info.zLimit = z;
-
-    return info;
+    return {
+      "rows": rows,
+      "xLimit": board.xMax,
+      "yLimit": board.yMax,
+      "zLimit": board.zMax
+    };
   };
 
   // Pretty printing for the board
@@ -69,11 +65,9 @@
     b.forEach(function (row) {
       if (board.hasOwnProperty('zMax')) {
         row.forEach(function (col) {
-          // console.log(col.join(' '));
 	  output.push(col.join(' '));
         });
       } else {
-        // console.log(row.join(' '));
 	output.push(row.join(' '));
       }
     });
@@ -295,19 +289,6 @@
     }
   };
 
-  var writeResults = function (output, piece) {
-    var filename = process.argv[2] + '-output.json';
-
-    fs.appendFile('./res/output/' + filename, function (err) {
-      if (err) {
-	console.log('An error occurred while writing to the file');
-	console.log(err);
-      } else {
-	console.log()
-      }
-    });
-  };
-
   // Populate the reachability board based on the current piece
   exports.populateBoard = function (board, piece) {
     var reachability = piece.reachability;
@@ -323,10 +304,19 @@
 
     var output = prettyPrintBoard(board.rows);
 
-    console.log(piece.piece);
-    console.log(output);
-    console.log("\n");
-
     return output;
+  };
+  
+  // Transform the move board (an array of strings) to a 2d array
+  exports.transformMoves = function (moves) {
+    var tmp = moves;
+
+    tmp.forEach(function (row, i) {
+      tmp[i] = row.split(' ').map(function (entry) {
+        return Number(entry);
+      });
+    });
+
+    return tmp;
   };
 })();
