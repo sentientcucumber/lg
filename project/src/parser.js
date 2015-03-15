@@ -155,7 +155,6 @@
   };
 
   // Productions //////////////////////////////////////////////////////////////
-  // The productions for admissible trajectories of degree two
   var one = function (parser) {
     var start = {
       "x": parser.piece.startX,
@@ -181,7 +180,6 @@
 
       if (index > -1) {
         parser.state[index] = new NonTerminal('A', x, y, parser.len);
-        console.log('one -> ' + parser.state);
         two(parser);
       } else {
         console.error('Expected to find S symbol, but none was found');
@@ -208,13 +206,12 @@
         var second = new NonTerminal('A', med, current.y, current.len - lmed);
 
         parser.state.splice(index - 1, 1, first, second);
-        console.log('two -> ' + parser.state);
         three(parser);
       } else {
         three(parser);
       }
     } else {
-      console.error('Expected to find A symbol, but none were found.');
+      console.error(parser.state.join(' '));
     }
   };
 
@@ -227,8 +224,6 @@
           x = translateLinearCoordinate(current.x, parser.rowLen),
           y = translateLinearCoordinate(current.y, parser.rowLen);
 
-      console.log('mapping', mapping(x, y, parser.startBoard), current.len);
-
       if (x &&
           mapping(x, y, parser.startBoard) === current.len &&
           current.len >= 1) {
@@ -238,13 +233,12 @@
             nonterminal = new NonTerminal('A', next, current.y, --current.len);
 
         parser.state.splice(index, 1, terminal, nonterminal);
-        console.log('three -> ' + parser.state);
         three(parser);
       } else {
         four(parser);
       }
     } else {
-      console.error('Expected to find A symbol, but none were found.');
+      console.log(parser.state.join(' '));
     }
   };
 
@@ -255,9 +249,9 @@
     var current = parser.state[index],
         x = translateLinearCoordinate(current.x, parser.rowLen),
         y = translateLinearCoordinate(current.y, parser.rowLen);
-
-    if (!x && parser.piece.endX === y.x && parser.piece.endY === y.y) {
-      parser.state.splice(index, 1, new Terminal('a', x));
+    
+    if (parser.piece.endX === y.x && parser.piece.endY === y.y) {
+      parser.state.splice(index, 1, new Terminal('a', current.x));
       three(parser);
     } else {
       five(parser);

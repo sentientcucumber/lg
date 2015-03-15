@@ -7,7 +7,7 @@
   var input = utils.validateFile(2);
 
   if (input) {
-    var len = 8;
+    var len = 7;
     var pieces = input.pieces;
 
     pieces.forEach(function (piece) {
