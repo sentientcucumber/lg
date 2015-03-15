@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Projects for Linguistic Geometry, done in Node.js.",
   "main": "src/main.js",
-  "author": "Michael Hunsinger",
+    "author": "Michael Hunsinger",
   "scripts": {
       "trajectories": "node src/trajectories.js",
       "maps": "node src/maps.js"

@@ -1,0 +1,65 @@
+#+TITLE: Assignment Six
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{multicol}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.375in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+#+LaTeX_HEADER: \usepackage{skak}
+
+* Question One
+  We can see that some of the conditions for \alpha have changed. With the
+  modified grammar, we are now taking the minimum of /NEXTTIME(z)/ and /k/,
+  rather than the maximum. We know from previous assignments that /NEXTTIME/,
+  similiar to /TIME/, is used to determine the available time along a given
+  negation. With the original grammar, if two pieces shared a location in a
+  given trajectory, the greater of the two values would have been held, while
+  the other was discarded. This could happen if a piece had extra time to
+  arrive at a given location before intercepting the piece along the
+  trajectory. Since we will favor the minimum of these two numbers, this may
+  affect the number of subsequent negations. Below is an example showing when
+  this may occur.
+
+  #+BEGIN_LaTeX
+    \begin{center}
+      \newgame
+      \fenboard{3R3K/8/b7/8/1k6/8/n7/8 w - - 0 20}
+      \showboard
+    \end{center}
+  #+END_LaTeX
+
+  Albeit strange, this board shows how taking the minimum may cause a
+  difference when generating zones. If we focus on location 40, two negations
+  can occur, that of the Black Bishop and the Black Knight. We have the
+  following conditions with respect to location 40.
+
+  #+BEGIN_LaTeX
+    \begin{equation*}
+      \begin{split}
+        TIME(40) & = 3 \\
+        t(K, t_{K}, 8) & = a(64)a(56)a(48)a(40)a(32)a(24)a(16)a(8) \\
+        t(b, t_{b}, 3) & = a(41)a(13)a(40) \\
+        t(n, t_{n}, 3) & = a(9)a(3)a(13)a(30)a(40) \\
+      \end{split}
+    \end{equation*}
+  #+END_LaTeX
+
+  The trajectories for the Bishop and Knight overlap at location 13. When
+  computing /NEXTTIME(13)/, the Knight would generate a 1 and the Bishop would
+  generate a 3. While this doesn't affect the current negation, it would affect
+  the second negation involving the White Rook. \\
+
+  If we use the original, unchanged grammar, we would take the maximum of the
+  two values, thus a 3. This value would be used for the /TIME/ matrix in the
+  second negation. When finding negations for location 13, we could include the
+  White Rook, which could reach this location in 2 moves. \\
+
+  It's also easy to see if we used the new grammar, and took the minimum of the
+  two numbers, a 1, that the White Rook could not reach this location within
+  one move. Thus this negation would be ignored in the zone. 

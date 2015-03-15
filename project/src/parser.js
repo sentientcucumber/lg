@@ -43,8 +43,6 @@
 
   // Grammar functions ////////////////////////////////////////////////////////
   var mapping = function (start, end, moves) {
-    var rowLen = moves[0].length;
-
     var startDist = moves[(7 - (start.y - 1))][start.x - 1],
         endDist = moves[(7 - (end.y - 1))][end.x - 1];
 
@@ -115,7 +113,9 @@
       });
     });
 
-    return _.sample(_.intersection(sum, results, results2));;
+    var next = _.sample(_.intersection(sum, results, results2));
+
+    return (next) ? next : x;
   };
 
   // Helper functions /////////////////////////////////////////////////////////
@@ -202,7 +202,7 @@
 
       if (mapping(x, y, parser.startBoard) !== current.len) {
         var med = medFn(parser, current.x, current.y, current.len),
-            lmed = lmedFn(x, y, parser.startBoard);
+            lmed = parser.startBoard[x.x][x.y]; // lmedFn(x, y, parser.startBoard);
 
         var first = new NonTerminal('A', current.x, med, lmed);
         var second = new NonTerminal('A', med, current.y, current.len - lmed);
@@ -218,6 +218,7 @@
     }
   };
 
+  // Production three
   var three = function (parser) {
     var index = findNonTerminal(parser.state, 'A');
 
@@ -226,11 +227,11 @@
           x = translateLinearCoordinate(current.x, parser.rowLen),
           y = translateLinearCoordinate(current.y, parser.rowLen);
 
-      console.log(current.len);
+      console.log('mapping', mapping(x, y, parser.startBoard), current.len);
 
-      if (current.x &&
+      if (x &&
           mapping(x, y, parser.startBoard) === current.len &&
-          parser.len >= 1) {
+          current.len >= 1) {
 
         var terminal = new Terminal('a', current.x),
             next = nextFn(parser, current.x, current.y, current.len),
@@ -240,7 +241,6 @@
         console.log('three -> ' + parser.state);
         three(parser);
       } else {
-        console.log('false');
         four(parser);
       }
     } else {
@@ -248,7 +248,7 @@
     }
   };
 
-  // Combines productions four and five together
+  // Production four
   var four = function (parser) {
     var index = findNonTerminal(parser.state, 'A');
 
@@ -257,12 +257,25 @@
         y = translateLinearCoordinate(current.y, parser.rowLen);
 
     if (!x && parser.piece.endX === y.x && parser.piece.endY === y.y) {
-      parser.state.splice(index, 1, new Terminal('a', current.x));
-
+      parser.state.splice(index, 1, new Terminal('a', x));
       three(parser);
     } else {
-      parser.state.splice(index, 1);
+      five(parser);
+    }
+  };
 
+  // Production five
+  var five = function (parser) {
+    var index = findNonTerminal(parser.state, 'A');
+
+    var current = parser.state[index],
+        x = translateLinearCoordinate(current.x, parser.rowLen),
+        y = translateLinearCoordinate(current.y, parser.rowLen);
+
+    if (parser.piece.endX !== y.x && parser.piece.endY !== y.y) {
+      parser.state.splice(index, 1);
+      three(parser);
+    } else {
       console.log(parser.state.join(' '));
     }
   };
@@ -292,8 +305,9 @@
   // Creates a Parser object
   exports.Parser = function (piece, board, len) {
     // Holds the state for the parser
-    this.state = new Array();
+    this.state = [ ];
 
+    this.board = board;
     this.piece = piece;
     this.len = len;
 

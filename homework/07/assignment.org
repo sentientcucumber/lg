@@ -1,0 +1,97 @@
+#+TITLE: Assignment Seven
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{multicol}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.075in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+#+LaTeX_HEADER: \usepackage{skak}
+
+* Question One
+  Let Z be the zone defined by the board, where Z = t(B, t_B, 3) t(P, t_P, 1)
+  t(k, t_k, 3). \\
+
+** First Translation
+   Consider the White Bishop moving from f2 to g3. Since the Bishop is
+   advancing we must use the timer function /timer_{\pi}(t(B, t_B, 3)) = \tau - 1/.
+
+   We must now check to ensure all related trajectories are still valid for the
+   newly translated zone.
+   
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         & timer_{\pi}(t(B, t_B, 3)) = \tau - 1 = 3 - 1 = 2 \\
+         & \Pi_{M_{0}}(t_B) = a(g3)a(e5) \\
+         & timer_{\pi}(t(P, t_P, 1)) = \tau - 1 = 2 - 1 = 1 \\
+         & timer_{\pi}(t(K, t_K, 3)) = \tau - 1 = 2 - 3 = -1 \\
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+
+   The Pawn keeps its connection g3, however, the Black King loses its
+   connection at e5. 
+
+** Second Translation
+   Consider the Black King advancing to c7. Since this is not the main
+   trajectory, \tau will not change for all trajectories.
+
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         & timer_{\pi}(t(B, t_B, 3)) = \tau = 3 \\
+         & timer_{\pi}(t(P, t_P, 1)) = \tau = 1 \\
+         & timer_{\pi}(t(K, t_K, 3)) = \tau = 3 \\
+         & \Pi_{M_{0}}(t_K) = a(c7)a(d6)a(e5) \\
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+
+   Not much changes with the exception of the King's trajectory.
+
+** Third Translation
+   Consider the Black King advancing from c7 to d6. Since this is not the main
+   trajectory, \tau will not change for all trajectories.
+
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         & timer_{\pi}(t(B, t_B, 3)) = \tau = 3 \\
+         & timer_{\pi}(t(P, t_P, 1)) = \tau = 1 \\
+         & timer_{\pi}(t(K, t_K, 3)) = \tau = 3 \\
+         & \Pi_{M_{0}}(t_K) = a(d6)a(e5) \\
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+
+   Again, since this is not the main piece, not much changes with the exception
+   of the King's trajectory.
+   
+* Question Two
+  Below is the table describing motion in the Zone. \\
+  
+  /Uppercase letters are used to describe white pieces, while lowercase are used
+  for black pieces, 'k' is for Kings, 'n' is Knight./
+
+  #+BEGIN_LaTeX
+    \begin{equation*}
+      \begin{split}
+        & t_{n_{1}} = a(e1)a(f3)a(g5)a(h7) \\
+        & t_{n_{2}} = a(e1)a(d3)a(e5)a(f7)a(h8) \\
+        & t_{k_{1}} = a(f5)a(g6)a(h7) \\
+        & t_{k_{2}} = a(f5)a(f6)a(g7)a(h8) \\
+      \end{split}
+    \end{equation*}
+  #+END_LaTeX
+
+  |        | (start) | (n, e1, f3) | (P, h5, h6)    | (n, f3, g5) | (P, h6, h7)    | (n, g5, h7) | (P, h7, h8) |
+  | t_{n_{1}} | (3, 3)  | (2, 3)      | (2, 2)         | (1, 2)      | (1, 1)         | (0, 1)      |             |
+  | t_{n_{2}} | (4, 4)  | Freeze      |                |             |                |             |             |
+  | t_{k_{1}} | (2, 3)  | (2, 3)      | (2, 2)         | (2, 2)      | (2, 1), Freeze |             |             |
+  | t_{k_{2}} | (3, 3)  | (3, 3)      | (3, 2), Freeze |             |                |             |             |
