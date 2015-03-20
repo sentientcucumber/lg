@@ -38,6 +38,13 @@
       npm run trajectories res/input/2d-chess-king.json
     #+END_SRC
 
+*** Zones
+    Run the program to generate trajectories for a given piece.
+
+    #+BEGIN_SRC sh
+      npm run zones res/input/2d-chess-king.json
+    #+END_SRC    
+
 * Input
   This section outlines the various files the program can consume.
 

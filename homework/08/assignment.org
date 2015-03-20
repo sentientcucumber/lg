@@ -1,0 +1,33 @@
+#+TITLE: Assignment Eight
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{multicol}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.075in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+#+LaTeX_HEADER: \usepackage{skak}
+
+#+CAPTION: Maintenance planning model
+[[./img/Maintenance.png]]
+
+Above is the maintenance planning model for the homework assignment. Red and
+blue were used to signify different teams. Each vertex in a path signifies a
+day in increasing order. That is, the first dot represents day one, the second
+day two, and so forth. The number of resources at a given point are given in
+parenthesis. \\
+
+The top piece, p_1, can only be completed on the first three days as day four
+does not have the minimum number of resources available. We then can then
+schedule one of the remaining pieces on the second and third day. The final
+piece (either p_2 or p_3 depending on the previous choice) can be scheduled for
+the third and fourth days. \\
+
+There are two paths for both p_2 and p_3 since their scheduled days (days two
+and three or days three and four) can be switched. They cannot be scheduled for
+the same days though, the paths are mutually exclusive.

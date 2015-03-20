@@ -7,11 +7,10 @@
   var input = utils.validateFile(2);
 
   if (input) {
-    var len = 7;
     var pieces = input.pieces;
 
     pieces.forEach(function (piece) {
-      var trajectory = parser.Parser(piece, input.board, len);
+      parser.Parser(piece, input.board, piece.length);
     });
   } else {
     console.log("Invalid file, exiting program.");

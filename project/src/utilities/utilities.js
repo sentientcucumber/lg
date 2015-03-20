@@ -1,8 +1,6 @@
-// utils.js
-// Contains functions used to validate input
-
 (function() {
-  'use-strict';
+  // Various helper functions used throughout the project
+  'use strict';
 
   // Dependencies
   var fs = require('fs');
@@ -12,7 +10,6 @@
     try {
       var parsedFile = JSON.parse(fs.readFileSync(file));
 
-      // TODO Check for required fields before returning
       return parsedFile;
     } catch (e) {
       console.error("The input file was not properly formatted JSON.");
@@ -25,13 +22,13 @@
   // Checks to see if a file was provided, and if so, does the file contain
   // the required information. If so, a JSON object is returned to be used
   // in subsequent calls.
-  exports.validateFile = function (param) {
-    var file = process.argv[param];
-
+  exports.validateFile = function (file) {
     if (file) {
       return validateFile(file);
     } else {
-      console.error("Usage: npm run project <chess file> <grammar file> <maps file>");
+      console.error("Your run command was improperly formatted.\n" +  
+                    "Please consult the README.pdf located in the doc folder\n" +
+                    "for instructions on running the project.\n");
 
       return null;
     }
@@ -51,5 +48,10 @@
         console.log(filename + ' written successfully!');
       }
     });
+  };
+
+  // Changes human readable coordinates to linear locations
+  exports.toLinear = function (point, length) {
+    return point.y * length - (length - point.x);
   };
 })();

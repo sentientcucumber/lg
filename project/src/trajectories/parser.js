@@ -287,7 +287,7 @@
 
   // Generates an ending board based on the ending postion
   var generateEndBoard = function (piece, board) {
-    var end =  {
+    var end = {
       "x": piece.endX - 1,
       "y": piece.endY - 1
     };

@@ -6,7 +6,7 @@
     },
     "pieces": [
         {
-            "piece": "King",
+            "name": "King",
             "startX": 2,
             "startY": 7,
             "reachability": [
@@ -19,7 +19,7 @@
             ]
         },
         {
-            "piece": "Queen",
+            "name": "Queen",
             "startX": 2,
             "startY": 7,
             "reachability": [
@@ -38,7 +38,7 @@
             ]
         },
 	{
-            "piece": "Bishop",
+            "name": "Bishop",
             "startX": 2,
             "startY": 7,
             "reachability": [
@@ -49,7 +49,7 @@
             ]
         },
 	{
-            "piece": "Knight",
+            "name": "Knight",
             "startX": 2,
             "startY": 7,
             "reachability": [
@@ -64,7 +64,7 @@
             ]
         },
 	{
-            "piece": "Rook",
+            "name": "Rook",
             "startX": 2,
             "startY": 7,
             "reachability": [
@@ -79,7 +79,7 @@
             ]
         },
 	{
-            "piece": "Pawn",
+            "name": "Pawn",
             "startX": 2,
             "startY": 7,
             "reachability": [
