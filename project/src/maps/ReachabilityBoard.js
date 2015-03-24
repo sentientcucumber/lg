@@ -55,6 +55,40 @@
     this.board = reachability.board;
   };
 
+  // Return a subset of the board
+  ReachabilityBoard.prototype.subset = function (board, location) {
+    var left = board.xMax - location.x
+    ,   right = board.xMax + left
+    ,   bottom = board.yMax - location.y
+    ,   top = board.yMax + bottom
+    ,   subset = [ ];
+
+    for (var i = bottom; i < top; i++) {
+      var row = [ ];
+
+      for (var j = left; j < right; j++) {
+        row.push(this.board[i][j]);
+      }
+
+      subset.push(row);
+    }
+
+    var reachBoard = new ReachabilityBoard({
+      "xMax": board.xMax,
+      "yMax": board.yMax
+    });
+
+    reachBoard.board = subset.reverse();
+    reachBoard.pieces = this.pieces;
+
+    return reachBoard;
+  };
+
+  // Returns the value at on the board for a given location object
+  ReachabilityBoard.prototype.atLocation = function (location) {
+    return this.board[location.y - 1][location.x - 1];
+  };
+
   module.exports = {
     ReachabilityBoard: ReachabilityBoard
   };

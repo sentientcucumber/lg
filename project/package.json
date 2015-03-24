@@ -1,15 +1,16 @@
 {
-    "name": "LG-Project",
-    "version": "1.0.0",
-    "description": "Project for Linguistic Geometry, done in Node.js.",
-    "author": "Michael Hunsinger",
-    "scripts": {
-        "maps": "node src/maps/main.js",
-        "trajectories": "node src/trajectories/main.js",
-        "zones": "node src/zones/main.js"
-    },
-    "dependencies": {
-        "mathjs": "^1.2.0",
-        "underscore": "^1.7.0"
-    }
+  "name": "LG-Project",
+  "version": "1.0.0",
+  "description": "Project for Linguistic Geometry, done in Node.js.",
+  "author": "Michael Hunsinger",
+  "scripts": {
+    "maps": "node src/maps/main.js",
+    "trajectories": "node src/trajectories/main.js",
+    "zones": "node src/zones/main.js"
+  },
+  "dependencies": {
+    "lodash": "^3.5.0",
+    "mathjs": "^1.2.0",
+    "underscore": "^1.7.0"
+  }
 }
