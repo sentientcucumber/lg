@@ -15,7 +15,7 @@
   ,   A = Symbols.NonTerminal
   ,   a = Symbols.Terminal
   ,   _ = require('lodash')
-  ,   Node = require('tree-node');
+  ,   Tree = require('easy-tree');
 
   // Trajectory constructor, adds the piece and board to global scope
   var Trajectory = function (piece, board) {
@@ -38,10 +38,10 @@
 
       parser.addTerminal(new A(start, end, length));
 
-      // The search tree for possible trajectories
-      var node = new Node().data(_.omit(start, 'toString'));
+      // TODO implement the search tree
+      var tree = null;
 
-      findDockLocation(this, parser, node);
+      findDockLocation(this, parser, tree);
     } else {
       console.error('Conditions for the first production were not met.');
       process.exit(1);
@@ -74,7 +74,7 @@
   // the possible next locations, it goes through all leaves in the tree to
   // determine if the end point has been reached, and if it hasn't then adds
   // a possible location
-  var nextLocation = function (board, overlay, piece, length, location, node) {
+  var nextLocation = function (board, overlay, piece, length, location, tree) {
     var start = new Location(piece.startX, piece.startY)
     ,   end = new Location(piece.endX, piece.endY)
     ,   originalLength = piece.length;
@@ -85,11 +85,6 @@
                                                originalLength - length + 1);
 
     var moves = intersection(sum, currentReachable, originalReachable);
-
-    // TODO must get binary tree working!
-    // moves.forEach(function (move) {
-    //   node.createChild(new Node().data(_.omit(move, 'toString')));
-    // });
 
     return _.sample(moves);
   };
@@ -163,7 +158,7 @@
   };
 
   // Compare two objects
-  function compareObjects (a, b, comparison) {
+   var compareObjects = function (a, b, comparison) {
     var result = [ ];
 
     for (var i = 0; i < a.length; i++) {
@@ -178,10 +173,10 @@
     }
 
     return result;
-  }
+   };
 
   // Used to compare arrays of objects.
-  function intersection () {
+  var intersection = function () {
     var results = arguments[0];
     var lastArg = arguments[arguments.length - 1];
 
@@ -192,13 +187,27 @@
       if (results.length === 0) break;
     }
     return results;
-  }
+  };
+
+  var printTrajectory = function (trajectory, parser) {
+    var terminals = parser.state
+    ,   board = trajectory.board.board;
+
+    terminals.forEach(function (terminal) {
+      var location = terminal.location;
+
+      board[location.y - 1][location.x - 1] = 'X';
+    });
+
+    console.log(trajectory.board.toString());
+    console.log(parser.toString());
+  };
 
   // Productions //////////////////////////////////////////////////////////
 
   // Analogous to the second production in the Trajectory grammar this splits
   // the trajectory based on the dock point
-  var findDockLocation = function (trajectory, parser, node) {
+  var findDockLocation = function (trajectory, parser, tree) {
     var board = trajectory.board
     ,   piece = trajectory.piece
     ,   overlay = trajectory.overlay;
@@ -213,13 +222,13 @@
       console.error('Haven\'t implemented admissable trajectories yet.');
       process.exit();
     } else {
-      findTrajectory(trajectory, parser, node);
+      findTrajectory(trajectory, parser, tree);
     }
   };
 
   // Analogous to the third production that does the majority of work in
   // finding trajectories
-  var findTrajectory = function (trajectory, parser, node) {
+  var findTrajectory = function (trajectory, parser, tree) {
     var board = trajectory.board
     ,   piece = trajectory.piece
     ,   overlay = trajectory.overlay
@@ -235,19 +244,19 @@
       if (withinReach(end, subset) === length && length >= 1) {
         parser.replaceSymbol('A', new a(current.start));
 
-        var next = nextLocation(board, overlay, piece, length, current.start, node);
+        var next = nextLocation(board, overlay, piece, length, current.start, tree);
 
         parser.addNonTerminal(new A(next, end, --length));
         
-        findTrajectory(trajectory, parser, node);
+        findTrajectory(trajectory, parser, tree);
       } else {
-        finalLocation(trajectory, parser, node);
+        finalLocation(trajectory, parser, tree);
       }
     }
   };
 
   // Analogous to the fourth and fifth productions
-  var finalLocation = function (trajectory, parser, node) {
+  var finalLocation = function (trajectory, parser, tree) {
     var current = parser.findSymbol('A')
     ,   piece = trajectory.piece;
  
@@ -257,9 +266,9 @@
     if (_.isEqual(currentDest, finalDest)) {
       parser.replaceSymbol('A', new a(current.end));
 
-      console.log(parser.toString());
+      printTrajectory(trajectory, parser);
 
-      findTrajectory(trajectory, parser, node);
+      findTrajectory(trajectory, parser, tree);
     } else {
       parser.removeSymbol('A');
 
