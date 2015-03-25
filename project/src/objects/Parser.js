@@ -31,17 +31,24 @@
   };
 
   Parser.prototype.findSymbol = function (name) {
+    var i = this.findIndex(name);
+
+    return this.state[i];
+  };
+
+  Parser.prototype.findIndex = function (name) {
     return _.findIndex(this.state, function (entry) {
-      return entry.name = name;
+      return entry.name === name;
     });
   };
 
-  Parser.prototype.removeSymbol = function (index) {
-    _.pullAt(this.state, index);
+  Parser.prototype.removeSymbol = function (name) {
+    var i = this.findIndex(name);
+    _.pullAt(this.state, i);
   };
 
   Parser.prototype.replaceSymbol = function (name, symbol) {
-    var i = this.findSymbol(name);
+    var i = this.findIndex(name);
     this.state[i] = symbol;
   };
 
