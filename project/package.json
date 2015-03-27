@@ -11,6 +11,7 @@
   "dependencies": {
     "lodash": "^3.5.0",
     "mathjs": "^1.2.0",
+    "tree-model": "^1.0.0",
     "underscore": "^1.7.0"
   }
 }

@@ -15,7 +15,8 @@
   ,   A = Symbols.NonTerminal
   ,   a = Symbols.Terminal
   ,   _ = require('lodash')
-  ,   Tree = require('easy-tree');
+  ,   treeModel = require('tree-model')
+  ,   Tree = new treeModel();
 
   // Trajectory constructor, adds the piece and board to global scope
   var Trajectory = function (piece, board) {
@@ -39,15 +40,19 @@
       parser.addTerminal(new A(start, end, length));
 
       // TODO implement the search tree
-      var tree = null;
+      var root = Tree.parse({ 'name': start.toString() });
 
-      findDockLocation(this, parser, tree);
+      findDockLocation(this, parser, root);
     } else {
       console.error('Conditions for the first production were not met.');
       process.exit(1);
     }
   };
   
+  Trajectory.prototype.trajectoryBundle = function (piece, board) {
+    
+  };
+
   module.exports = {
     Trajectory: Trajectory
   };
@@ -74,7 +79,7 @@
   // the possible next locations, it goes through all leaves in the tree to
   // determine if the end point has been reached, and if it hasn't then adds
   // a possible location
-  var nextLocation = function (board, overlay, piece, length, location, tree) {
+  var nextLocation = function (board, overlay, piece, length, location, root) {
     var start = new Location(piece.startX, piece.startY)
     ,   end = new Location(piece.endX, piece.endY)
     ,   originalLength = piece.length;
@@ -86,6 +91,25 @@
 
     var moves = intersection(sum, currentReachable, originalReachable);
 
+    // moves.forEach(function (location) {
+    //   root.addChild(Tree.parse({ 'name' : location.toString() }));
+    // });
+
+    var leaves = root.all({ strategy: 'breadth'}, function (node) {
+      return !node.hasChildren();
+    });
+
+    leaves.forEach(function (leaf) {
+      var coordinates = leaf.model.name.split(/,/)
+      ,   current = new Location(coordinates[0], coordinates[1])
+      ,   leafReachable = reachableLocations(board, overlay, current, 1)
+      ,   leafMoves = intersection(sum, leafReachable, originalReachable);
+
+      leafMoves.forEach(function (location) {
+        leaf.addChild(Tree.parse({ 'name' : location.toString() }));
+      });
+    });
+    
     return _.sample(moves);
   };
 
@@ -207,7 +231,7 @@
 
   // Analogous to the second production in the Trajectory grammar this splits
   // the trajectory based on the dock point
-  var findDockLocation = function (trajectory, parser, tree) {
+  var findDockLocation = function (trajectory, parser, root) {
     var board = trajectory.board
     ,   piece = trajectory.piece
     ,   overlay = trajectory.overlay;
@@ -222,13 +246,13 @@
       console.error('Haven\'t implemented admissable trajectories yet.');
       process.exit();
     } else {
-      findTrajectory(trajectory, parser, tree);
+      findTrajectory(trajectory, parser, root);
     }
   };
 
   // Analogous to the third production that does the majority of work in
   // finding trajectories
-  var findTrajectory = function (trajectory, parser, tree) {
+  var findTrajectory = function (trajectory, parser, root) {
     var board = trajectory.board
     ,   piece = trajectory.piece
     ,   overlay = trajectory.overlay
@@ -244,19 +268,19 @@
       if (withinReach(end, subset) === length && length >= 1) {
         parser.replaceSymbol('A', new a(current.start));
 
-        var next = nextLocation(board, overlay, piece, length, current.start, tree);
+        var next = nextLocation(board, overlay, piece, length, current.start, root);
 
         parser.addNonTerminal(new A(next, end, --length));
         
-        findTrajectory(trajectory, parser, tree);
+        findTrajectory(trajectory, parser, root);
       } else {
-        finalLocation(trajectory, parser, tree);
+        finalLocation(trajectory, parser, root);
       }
     }
   };
 
   // Analogous to the fourth and fifth productions
-  var finalLocation = function (trajectory, parser, tree) {
+  var finalLocation = function (trajectory, parser, root) {
     var current = parser.findSymbol('A')
     ,   piece = trajectory.piece;
  
@@ -267,8 +291,14 @@
       parser.replaceSymbol('A', new a(current.end));
 
       printTrajectory(trajectory, parser);
+      
+      findTrajectory(trajectory, parser, root);
 
-      findTrajectory(trajectory, parser, tree);
+      var ends = root.all({ strategy: 'breadth' }, function (node) {
+        return !node.hasChildren();
+      });
+
+      console.log('There are', ends.length, 'trajectories in this bundle.');
     } else {
       parser.removeSymbol('A');
 
