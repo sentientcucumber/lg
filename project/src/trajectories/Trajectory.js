@@ -39,7 +39,6 @@
 
       parser.addTerminal(new A(start, end, length));
 
-      // TODO implement the search tree
       var root = Tree.parse({ 'name': start.toString() });
 
       findDockLocation(this, parser, root);
@@ -49,10 +48,6 @@
     }
   };
   
-  Trajectory.prototype.trajectoryBundle = function (piece, board) {
-    
-  };
-
   module.exports = {
     Trajectory: Trajectory
   };
@@ -65,14 +60,23 @@
   };
 
   // Analogous to the med function in the Trajectory Grammar
-  var midwayPoint = function (start, end, length) {
-    
-  };
+  var dockPoint = function (start, end, overlay, board, length) {
+    var locations = [ ]
+    ,   startBoard = overlay.subset(board, start).board.reverse();
 
-  // Generate a set of locations from the board that are within the
-  // trajectory's length
-  var dockSet = function (board) {
-    
+    startBoard.forEach(function (row, i) {
+      row.forEach(function (col, j) {
+        var current = Number(col)
+        ,   fromCurrent = overlay.subset(board, new Location(j + 1, i + 1))
+        ,   rest = withinReach(end, fromCurrent);
+
+        if ((current + rest) === length) {
+          locations.push(new Location(j + 1, i + 1));
+        }
+      });
+    });
+
+    return _.sample(locations);
   };
 
   // Analogous to the next function. Although the function only returns one of
@@ -90,10 +94,6 @@
                                                originalLength - length + 1);
 
     var moves = intersection(sum, currentReachable, originalReachable);
-
-    // moves.forEach(function (location) {
-    //   root.addChild(Tree.parse({ 'name' : location.toString() }));
-    // });
 
     var leaves = root.all({ strategy: 'breadth'}, function (node) {
       return !node.hasChildren();
@@ -127,7 +127,7 @@
       row.forEach(function (col, j) {
         var value = Number(startBoard[i][j]) + Number(endBoard[i][j]);
 
-        if (value === piece.length) {
+        if (value <= piece.length) {
           locations.push(new Location(j + 1, i + 1));
         }
       });
@@ -242,8 +242,22 @@
 
     var subset = overlay.subset(board, start);
 
+    subset.board = subset.board.reverse();
+
     if (withinReach(end, subset) !== length) {
-      console.error('Haven\'t implemented admissable trajectories yet.');
+      // var dock = dockPoint(start, end, overlay, board, length)
+      // ,   dockLength = withinReach(dock, subset);
+
+      // board.board[dock.y - 1][dock.x - 1] = 'X';
+
+      // parser.replaceSymbol('A', new A(start, dock, dockLength));
+      // parser.addNonTerminal(new A(dock, end, length - dockLength));
+
+      // console.log(parser.toString());
+
+      // findTrajectory(trajectory, parser, root);
+
+      console.error('Admissable trajectories have not been implemented.');
       process.exit();
     } else {
       findTrajectory(trajectory, parser, root);
@@ -258,7 +272,7 @@
     ,   overlay = trajectory.overlay
     ,   current = parser.findSymbol('A');
 
-    if (current) {
+    if (current && current.start) {
       var start = new Location(current.start.x, current.start.y)
       ,   end = new Location(current.end.x, current.end.y)
       ,   length = current.length;

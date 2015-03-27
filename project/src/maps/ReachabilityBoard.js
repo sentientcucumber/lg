@@ -77,7 +77,7 @@
       "xMax": board.xMax,
       "yMax": board.yMax
     });
-
+    
     reachBoard.board = subset.reverse();
     reachBoard.pieces = this.pieces;
 
