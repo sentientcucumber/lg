@@ -162,7 +162,7 @@
       ,   length = marker.length
       ,   limit = new Location(zone.board.xMax, zone.board.yMax);
 
-      if (!_.isEqual(start, limit) && !_.isEqual(end, limit)) {
+      if (!_.isEqual(start, limit) || !_.isEqual(end, limit)) {
         increment(marker, zone.time, zone.current, zone.board);
         addNegation(zone, parser);
       } else {
@@ -187,7 +187,7 @@
     if ((zone.board.pieceOn(marker.start) &&
          marker.length > 0 &&
          !_.isEqual(marker.start, originalStart) &&
-         !_.isEqual(marker.end, originalEnd)) &&
+         !_.isEqual(marker.start, originalEnd)) &&
         ((!opposing(currentPiece, zone.main) &&
           helpers.withinReach(marker.end, reachBoard) === 1) ||
          (opposing(currentPiece, zone.main) &&
