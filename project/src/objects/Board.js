@@ -24,6 +24,7 @@
 
   // Dependencies
   var Piece = require('./Piece.js').Piece
+  ,   Location = require('./Location.js').Location
   ,   _ = require('underscore');
 
   // Gloabls
@@ -84,7 +85,56 @@
 
   // Determine whether or not a piece is at a given location
   Board.prototype.pieceOn = function (location) {
+    return (typeof this.board[location.y - 1][location.x - 1] === "object");
+  };
+
+  // Returns the value at on the board for a given location object
+  Board.prototype.atLocation = function (location) {
+    return this.board[location.y - 1][location.x - 1];
+  };
+
+  // Return a subset of the board
+  Board.prototype.subset = function (board, location) {
+    var left = board.xMax - location.x
+    ,   right = board.xMax + left
+    ,   bottom = board.yMax - location.y
+    ,   top = board.yMax + bottom
+    ,   subset = [ ];
+
+    for (var i = bottom; i < top; i++) {
+      var row = [ ];
+
+      for (var j = left; j < right; j++) {
+        row.push(this.board[i][j]);
+      }
+
+      subset.push(row);
+    }
+
+    var newBoard = new Board({
+      "xMax": board.xMax,
+      "yMax": board.yMax
+    });
     
+    newBoard.board = subset;
+    newBoard.pieces = this.pieces;
+
+    return newBoard;
+  };
+
+  // Express the nonempty values as set notation
+  Board.prototype.asSet = function () {
+    var locations = [ ]
+    ,   that = this;
+
+    this.board.forEach(function (row, i) {
+      row.forEach(function (col, j) {
+        if (that.board[j][i] !== 0)
+          locations.push(new Location(i + 1, j + 1));
+      });
+    });
+
+    return (locations.length > 0) ? '[ (' + locations.join('), (') + ') ]': '[ ]';
   };
 
   // Exports

@@ -10,6 +10,14 @@
     return this.x + ',' + this.y;
   };
 
+  Location.prototype.incX = function () {
+    this.x = this.x + 1;
+  };
+
+  Location.prototype.incY = function () {
+    this.y = this.y + 1;
+  };
+
   module.exports = {
     Location: Location
   };

@@ -1,35 +1,47 @@
 {
     "board": {
         "xMax": 8,
-        "yMax": 8,
-        "obstacles": [ ]
+        "yMax": 8
     },
-    "pieces": [
-        {
-            "name": "Bishop",
-            "startX": 6,
-            "startY": 2,
-            "endX": 4,
-            "endY": 4,
-            "goal": false,
-            "reachability": [
-		{
-                    "condition-1": "| y1 - x1 | <= 8",
-		    "condition-2": "| y1 - x1 | = | y2 - x2 |"
-                }
-            ]
-        },
-        {
-            "name": "Pawn",
-            "startX": 4,
-            "startY": 4,
-            "goal": true,
-            "reachability": [
-                {
-                    "condition-1": "y2 - x2 = 1",
-		    "condition-2": "y1 - x1 = 0"
-                }
-            ]
-        }
-    ]
+    "pieces": {
+        "white": [
+            {
+                "name": "Pawn",
+                "startX": 3,
+                "startY": 6,
+                "endX": 3,
+                "endY": 8,
+                "length": 2,
+                "team": "white",
+                "reachability": [
+                    {
+                        "condition-1": "| y2 - x2 | = 1",
+		        "condition-2": "| y1 - x1 | = 0"
+                    }
+                ]
+            }
+        ],
+        "black": [
+            {
+                "name": "king",
+                "startX": 1,
+                "startY": 6,
+                "team": "black",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 1"
+                    },
+                    {
+                        "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            },
+            {
+                "name": "goal",
+                "startX": 3,
+                "startY": 8,
+                "team": "black"
+            }
+        ]
+    }
 }

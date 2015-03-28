@@ -6,7 +6,6 @@
   ,   ReachBoard = require('./ReachabilityBoard.js').ReachabilityBoard;
 
   var input = utils.validateFile(process.argv[2]);
-  var output = new Array();
 
   if (input) {
     var pieces = input.pieces;
@@ -19,5 +18,6 @@
     });
   } else {
     console.log("Invalid file, exiting program.");
+    process.exit(1);
   }
 })();

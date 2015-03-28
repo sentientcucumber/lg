@@ -3,16 +3,17 @@
 
   /* Trajectory.js
    * 
-   * Creates a search tree to track all possible trajectories
-   * 
-   * Take careful consideration when reversing a board!
+   * A trajectory is the path of a piece from a starting to ending location.
+   * The trajectory returns only one trajectory, but also contains a tree
+   * that contains all possible paths between the two points.
    */
 
   // Dependencies
   var Parser = require('../objects/Parser.js').Parser
-  ,   Symbols = require('./Symbols.js')
   ,   Location = require('../objects/Location.js').Location
   ,   ReachBoard = require('../maps/ReachabilityBoard.js').ReachabilityBoard
+  ,   helpers = require('../helpers/helpers.js')
+  ,   Symbols = require('./Symbols.js')
   ,   Start = Symbols.Start
   ,   A = Symbols.NonTerminal
   ,   a = Symbols.Terminal
@@ -24,7 +25,7 @@
   var Trajectory = function (piece, board) {
     this.piece = piece;
     this.board = board;
-    this.overlay = overlayBoard(board, piece);
+    this.overlay = helpers.overlayBoard(board, piece);
 
     var parser = new Parser();
 
@@ -50,6 +51,30 @@
     }
   };
   
+  Trajectory.prototype.printTrajectory = function () {
+    var terminals = this.parser.state
+    ,   board = this.board.board;
+
+    terminals.forEach(function (terminal) {
+      var location = terminal.location;
+
+      board[location.y - 1][location.x - 1] = 'X';
+    });
+
+    console.log(this.board.toString());
+    console.log(this.parser.toString());
+
+    var ends = this.tree.all({ strategy: 'breadth' }, function (node) {
+      return !node.hasChildren();
+    });
+    
+    console.log('There are', ends.length, 'trajectories in this bundle.');
+  };
+
+  Trajectory.prototype.toString = function () {
+    return this.parser.toString();
+  };
+
   module.exports = {
     Trajectory: Trajectory
   };
@@ -122,8 +147,8 @@
     ,   end = new Location(piece.endX, piece.endY)
     ,   locations = [ ];
     
-    var startBoard = overlay.subset(board, start).board //.reverse()
-    ,   endBoard = overlay.subset(board, end).board; //.reverse();
+    var startBoard = overlay.subset(board, start).board
+    ,   endBoard = overlay.subset(board, end).board;
 
     startBoard.forEach(function (row, i) {
       row.forEach(function (col, j) {
@@ -153,34 +178,6 @@
     });
 
     return locations;
-  };
-
-  // Generate a board to "overlay" onto the existing game board to determine
-  // reachable locations quickly. Should be used with ReachabilityBoard's subset
-  var overlayBoard = function (board, piece) {
-    var overlayBoard = {
-      "xMax": board.xMax * 2 - 1,
-      "yMax": board.yMax * 2 - 1
-    };
-
-    var overlayPiece = {
-      "name": piece.name,
-      "startX": Math.ceil(overlayBoard.xMax / 2),
-      "startY": Math.ceil(overlayBoard.yMax / 2),
-      "reachability": piece.reachability
-    };
-
-    var reachBoard = new ReachBoard(overlayBoard);
-    reachBoard.generateReachability(overlayPiece);
-
-    var i = _.findIndex(reachBoard.pieces, function (entry) {
-      return entry.startX === overlayPiece.startX &&
-             entry.startY === overlayPiece.startY;
-    });
-
-    reachBoard.pieces.splice(i, 1, piece);
-
-    return reachBoard;
   };
 
   // Compare two objects
@@ -213,20 +210,6 @@
       if (results.length === 0) break;
     }
     return results;
-  };
-
-  var printTrajectory = function (trajectory, parser) {
-    var terminals = parser.state
-    ,   board = trajectory.board.board;
-
-    terminals.forEach(function (terminal) {
-      var location = terminal.location;
-
-      board[location.y - 1][location.x - 1] = 'X';
-    });
-
-    console.log(trajectory.board.toString());
-    console.log(parser.toString());
   };
 
   // Productions //////////////////////////////////////////////////////////
@@ -272,7 +255,7 @@
     ,   overlay = trajectory.overlay
     ,   current = parser.findSymbol('A');
 
-    if (current && current.start) {
+    if (current) {
       var start = new Location(current.start.x, current.start.y)
       ,   end = new Location(current.end.x, current.end.y)
       ,   length = current.length;
@@ -285,7 +268,7 @@
         var next = nextLocation(board, overlay, piece, length, current.start, root);
 
         parser.addNonTerminal(new A(next, end, --length));
-        
+
         findTrajectory(trajectory, parser, root);
       } else {
         finalLocation(trajectory, parser, root);
@@ -304,15 +287,17 @@
     if (_.isEqual(currentDest, finalDest)) {
       parser.replaceSymbol('A', new a(current.end));
 
-      printTrajectory(trajectory, parser);
-      
+      // Now that the trajectory has been found, add it to the Trajectory object
+      trajectory.parser = parser;
+      trajectory.tree = root;
+
       findTrajectory(trajectory, parser, root);
 
-      var ends = root.all({ strategy: 'breadth' }, function (node) {
-        return !node.hasChildren();
-      });
+      // var ends = root.all({ strategy: 'breadth' }, function (node) {
+      //   return !node.hasChildren();
+      // });
 
-      console.log('There are', ends.length, 'trajectories in this bundle.');
+      // console.log('There are', ends.length, 'trajectories in this bundle.');
     } else {
       parser.removeSymbol('A');
 

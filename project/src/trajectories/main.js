@@ -15,6 +15,7 @@
     
     pieces.forEach(function (piece) {
       var trajectory = new Trajectory(piece, board);
+      trajectory.printTrajectory();
     });
   } else {
     console.log("Invalid file, exiting program.");

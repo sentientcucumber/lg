@@ -7,12 +7,13 @@
 
   var Piece = function (piece) {
     this.name = piece.name;
-    this.startX = piece.startX;
-    this.startY = piece.startY;
-    this.endX = piece.endX;
-    this.endY = piece.endY;
-    this.goal = piece.goal;
-    this.reachability = piece.reachability;
+    this.startX = piece.startX || undefined;
+    this.startY = piece.startY || undefined;
+    this.endX = piece.endX || undefined;
+    this.endY = piece.endY || undefined;
+    this.length = piece.length || undefined;
+    this.team = piece.team || undefined;
+    this.reachability = piece.reachability || [ ];
   };
   
   Piece.prototype.toString = function() {

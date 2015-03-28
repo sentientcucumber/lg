@@ -2,7 +2,6 @@
     "board": {
         "xMax": 8,
         "yMax": 8,
-        "obstacles": [ ]
     },
     "pieces": [
         {
