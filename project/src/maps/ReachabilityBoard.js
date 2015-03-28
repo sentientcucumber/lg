@@ -78,7 +78,7 @@
       "yMax": board.yMax
     });
     
-    reachBoard.board = subset.reverse();
+    reachBoard.board = subset;
     reachBoard.pieces = this.pieces;
 
     return reachBoard;
@@ -86,7 +86,7 @@
 
   // Returns the value at on the board for a given location object
   ReachabilityBoard.prototype.atLocation = function (location) {
-    return this.board.reverse()[location.y - 1][location.x - 1];
+    return this.board[location.y - 1][location.x - 1];
   };
 
   module.exports = {

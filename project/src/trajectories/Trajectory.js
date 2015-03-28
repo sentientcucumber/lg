@@ -4,6 +4,8 @@
   /* Trajectory.js
    * 
    * Creates a search tree to track all possible trajectories
+   * 
+   * Take careful consideration when reversing a board!
    */
 
   // Dependencies
@@ -62,7 +64,7 @@
   // Analogous to the med function in the Trajectory Grammar
   var dockPoint = function (start, end, overlay, board, length) {
     var locations = [ ]
-    ,   startBoard = overlay.subset(board, start).board.reverse();
+    ,   startBoard = overlay.subset(board, start).board; //.reverse();
 
     startBoard.forEach(function (row, i) {
       row.forEach(function (col, j) {
@@ -109,8 +111,8 @@
         leaf.addChild(Tree.parse({ 'name' : location.toString() }));
       });
     });
-    
-    return _.sample(moves);
+
+    return (moves.length > 0) ? _.sample(moves) : location;
   };
 
   // Generates a set of locations that can be reached from the starting location
@@ -120,8 +122,8 @@
     ,   end = new Location(piece.endX, piece.endY)
     ,   locations = [ ];
     
-    var startBoard = overlay.subset(board, start).board.reverse()
-    ,   endBoard = overlay.subset(board, end).board.reverse();
+    var startBoard = overlay.subset(board, start).board //.reverse()
+    ,   endBoard = overlay.subset(board, end).board; //.reverse();
 
     startBoard.forEach(function (row, i) {
       row.forEach(function (col, j) {
@@ -139,7 +141,7 @@
   // Generates a set of locations that can be reached within a given number of
   // moves from a given location
   var reachableLocations = function (board, overlay, location, moves) {
-    var reachable = overlay.subset(board, location).board.reverse()
+    var reachable = overlay.subset(board, location).board //.reverse()
     ,   locations = [ ];
 
     reachable.forEach(function (row, i) {
@@ -241,8 +243,6 @@
     ,   length = piece.length;
 
     var subset = overlay.subset(board, start);
-
-    subset.board = subset.board.reverse();
 
     if (withinReach(end, subset) !== length) {
       // var dock = dockPoint(start, end, overlay, board, length)
