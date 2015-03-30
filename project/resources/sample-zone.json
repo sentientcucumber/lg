@@ -1,0 +1,104 @@
+{
+    "board": {
+        "xMax": 8,
+        "yMax": 8
+    },
+    "pieces": {
+        "white": [
+            {
+                "name": "King",
+                "startX": 2,
+                "startY": 1,
+                "team": "white",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 1"
+                    },
+                    {
+                        "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            },
+            {
+                "name": "Bishop",
+                "startX": 6,
+                "startY": 2,
+                "endX": 5,
+                "endY": 5,
+                "length": 2,
+                "team": "white",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 8",
+                        "condition-2": "| y1 - x1 | = | y2 - x2 |"
+                    }
+                ]
+            },
+            {
+                "name": "Pawn",
+                "startX": 3,
+                "startY": 3,
+                "reachability": [
+                    {
+                        "condition-1": "y2 - x2 = 1",
+                        "condition-2": "y1 - x1 = 0"
+                    }
+                ]
+            },
+            {
+                "name": "Pawn",
+                "startX": 4,
+                "startY": 5,
+                "reachability": [
+                    {
+                        "condition-1": "y2 - x2 = 1",
+                        "condition-2": "y1 - x1 = 0"
+                    }
+                ]
+            }
+        ],
+        "black": [
+            {
+                "name": "pawn",
+                "startX": 5,
+                "startY": 5,
+                "team": "black",
+                "reachability": [
+                    {
+                        "condition-1": "| y2 - x2 | = 1",
+                        "condition-2": "| y1 - x1 | = 0"
+                    }
+                ]
+            },
+            {
+                "name": "king",
+                "startX": 2,
+                "startY": 7,
+                "team": "black",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 1"
+                    },
+                    {
+                        "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            },
+            {
+                "name": "Knight",
+                "startX": 7,
+                "startY": 7,
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | = 2",
+                        "condition-2": "| y2 - x2 | = 1"
+                    },
+                    {
+                        "condition-1": "| y1 - x1 | = 1",
+                        "condition-2": "| y2 - x2 | = 2"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -19,7 +19,21 @@
 		        "condition-2": "| y1 - x1 | = 0"
                     }
                 ]
-            }
+            },
+            {
+                "name": "King",
+                "startX": 8,
+                "startY": 8,
+                "team": "white",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 1"
+                    },
+                    {
+                        "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            }            
         ],
         "black": [
             {
@@ -33,6 +47,18 @@
                     },
                     {
                         "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            },
+            {
+                "name": "pawn",
+                "startX": 8,
+                "startY": 5,
+                "team": "black",
+                "reachability": [
+                    {
+                        "condition-1": "| y2 - x2 | = 1",
+		        "condition-2": "| y1 - x1 | = 0"
                     }
                 ]
             },

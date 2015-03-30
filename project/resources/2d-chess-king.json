@@ -5,16 +5,18 @@
     },
     "pieces": [
         {
-            "name": "Pawn",
+            "name": "King",
             "startX": 1,
-            "startY": 5,
-            "endX": 1,
+            "startY": 6,
+            "endX": 3,
             "endY": 8,
             "length": 3,
             "reachability": [
                 {
-                    "condition-1": "| y2 - x2 | = 1",
-		    "condition-2": "| y1 - x1 | = 0"
+                    "condition-1": "| y1 - x1 | <= 1"
+                },
+                {
+                    "condition-1": "| y2 - x2 | <= 1"
                 }
             ]
         }

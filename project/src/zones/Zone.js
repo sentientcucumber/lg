@@ -197,7 +197,7 @@
       // trajectory
       currentPiece.endX = marker.end.x;
       currentPiece.endY = marker.end.y;
-      currentPiece.length = marker.length;
+      currentPiece.length = reachBoard.atLocation(marker.end); // marker.length;
 
       var negation = new Trajectory(currentPiece, zone.board);
 
@@ -219,7 +219,7 @@
 
     if (_.every(flatBoard, 0)) {
       var marker = parser.findSymbol('A').marker;
-      
+
       parser.replaceSymbol('A', new A(marker.reset, zone.next, new Board(zone.board)));
     } else {
       parser.removeSymbol('A');
