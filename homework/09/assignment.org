@@ -1,0 +1,145 @@
+#+TITLE: Assignment Nine
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{skak}
+#+LaTeX_HEADER: \usepackage{amsfonts}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.075in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+
+#+BEGIN_CENTER
+#+BEGIN_LaTeX
+  \newboard
+  \fenboard{7K/8/k1P5/7p/8/8/8/8 w - - 0 20}
+  \showboard
+#+END_LaTeX
+#+END_CENTER
+
+* Question One
+  We will use the Reti End Game board as an example for each of the following
+  searches. Let us consider the game to be over when the pawn reaches
+  /c8/. However, to better illustrate the differences between the search
+  algorithms, let's /not/ consider the zone grammar when determining *MV* and
+  *CUT*. More specifically, we will not consider the set of locations that is
+  generated when the trajectory is determined (for optimal or admissable).
+
+   #+BEGIN_LaTeX
+     \begin{equation*}
+       \begin{split}
+         S(0) & \rightarrow \underline{A(0)} \\
+              & \rightarrow \underline{A(1)} \pi(1) A(0) \\
+              & \rightarrow \underline{A(2)} \pi(2) A(1) \pi(1) A(0) \\
+              & \rightarrow \underline{A(3)} \pi(3) A(2) \pi(2) A(1) \pi(1) A(0) \\
+              & \rightarrow \underline{A(4)} \pi(4) A(3) \pi(3) A(2) \pi(2) A(1) \pi(1) A(0) \\
+              & \rightarrow \pi(4) \underline{A(3)} \pi(3) A(2) \pi(2) A(1) \pi(1) A(0) \\
+              & \rightarrow \pi(4) \pi(3) \pi(2) \underline{A(1)} \pi(1) A(0) \\
+              & \rightarrow \pi(4) \pi(3) \pi(2) \pi(1) \underline{A(0)} \\
+              & \rightarrow \pi(4) \pi(3) \pi(2) \pi(1) \\
+       \end{split}
+     \end{equation*}
+   #+END_LaTeX
+   
+   |---------+---+-----+------+-----+-----|
+   |         | 0 |   1 |    2 |   3 |   4 |
+   |---------+---+-----+------+-----+-----|
+   | i       | 0 |   1 |    2 |   3 |   4 |
+   | END     | 1 |   2 |    3 |   4 |   5 |
+   | v       | \ | 403 | -403 | 403 |  -1 |
+   | d       | 0 |   1 |    2 |   3 |   4 |
+   | Parent  | 0 |   0 |    1 |   2 |   3 |
+   | Child   | 0 |   2 |    3 |   4 | NIL |
+   | Sibling | 0 |   0 |    0 |   0 |   0 |
+   | Sign    | \ |   + |    - |   + |   - |
+   |---------+---+-----+------+-----+-----|
+
+   We can use this for all of the cases below. Although the move tree is the
+   same, the *MV* set and *CUT* differ for each case.
+
+** Simple Hill-Climbing
+   The Simple Hill-Climbing search algorithm moves to the closest node without
+   consideration of best global solution. As stated above we are not using the
+   trajectory grammar, thus we consider all reachable locations for possible
+   moves, whether optimal or not.
+
+   For brevity, we'll only consider the moves between the Black King and White
+   Pawn on the left side of the board, with white moving first. 
+
+   |---+-----------------------------------------------------------------------------+-------|
+   |   | MV                                                                          | CUT   |
+   |---+-----------------------------------------------------------------------------+-------|
+   | 1 | (p, c6, c7)                                                                 | False |
+   | 2 | (k, a6, a7), (\underline{k, a6, b7}), (k, a6, b6), (k, a6, b5), (k, a6, a5) | False |
+   | 3 | (p, c7, c8)                                                                 | False |
+   | 4 | (k, b7, b8), (\underline{k, b7, c8}), (k, b7, c7), (k, b7, c6), (k, b7, c5) | True  |
+   |   | (k, b7, b6), (k, b7, a6), (k, b7, a7)                                       |       |
+   |---+-----------------------------------------------------------------------------+-------|
+   
+** Steepest Ascent Hill-Climbing
+   Below is an example search using Steepest Ascent Hill-Climbing as the
+   Grammars of Reduced Searches.
+
+   |---+-------------+-------|
+   |   | MV          | CUT   |
+   |---+-------------+-------|
+   | 1 | (p, c6, c7) | False |
+   | 2 | (k, a6, b7) | False |
+   | 3 | (p, c7, c8) | False |
+   | 4 | (k, b7, c8) | True  |
+   |---+-------------+-------|
+
+** MiniMax
+   Below is an example search using MiniMax as the Grammars of Reduced
+   Searches.
+
+   |---+-------------+-------|
+   |   | MV          | CUT   |
+   |---+-------------+-------|
+   | 1 | (p, c6, c7) | False |
+   | 2 | (k, a6, b7) | False |
+   | 3 | (p, c7, c8) | False |
+   | 4 | (k, b7, c8) | True  |
+   |---+-------------+-------|
+   
+   Obviously the *MV* and *CUT* are the same for this scenario. The difference
+   is better illustrated if considering the White King on /h8/. If we generate
+   the *MV* and *CUT* set we see the King moving diagonally.
+
+   |---+------------------------------------------------------------------------------+-------|
+   |   | MV                                                                           | CUT   |
+   |---+------------------------------------------------------------------------------+-------|
+   | 1 | (K, h8, g8), (\underline{K, h8, g7}), (K, h8, h7)                            | False |
+   | 2 | (\underline{k, a6, a7}), (k, a6, b7), (k, a6, b6), (k, a6, b5), (k, a6, a5)  | False |
+   | 3 | (K, g7, g8), (K, g7, h8), (K, g7, h7), (K, g7, h6), (K, g7, g6),             | False |
+   |   | (\underline{K, g7, f6}), (K, g7, f7), (K, g7, f8)                            |       |
+   | 4 | (k, b6, b7), (k, b6, c7), (\underline{k, b6, c6}), (k, b6, c5), (k, b6, b5), | False |
+   |   | (k, b6, a5), (k, b6, a6), (k, b6, a7)                                        |       |
+   | 5 | (K, f6, f7), (K, f6, g7), (K, f6, g6), (K, f6, g5), (\underline{K, f6, f5}), | True  |
+   |   | (K, f6, e5), (K, f6, e6), (K, f6, e7)                                        |       |
+   |---+------------------------------------------------------------------------------+-------|
+   
+* Question Two
+  Below is the definition for the *MV* and *CUT* function.
+
+  #+BEGIN_LaTeX
+    \begin{equation*}
+      MV(p, x, R) = { z \in X | R_p(x, z) } \\
+    \end{equation*}
+    \begin{displaymath}
+      CUT(p, x, R) = \left\{ 
+        \begin{array}{lr}
+          true & : MV(p, x, R) \neq \varnothing \\
+          false & : MV(p, x, R) = \varnothing
+        \end{array}
+      \right.
+    \end{displaymath}
+  #+END_LaTeX
+
+  *MV* is the set locations reachable for piece /p/ from location /x/ to
+   /z/, where /z/ is a location in the board. *CUT* determines whether the
+   given branch can be cut or not.

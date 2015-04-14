@@ -1,0 +1,25 @@
+#+TITLE: Assignment Ten
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{skak}
+#+LaTeX_HEADER: \usepackage{pstricks,pst-node,pst-tree}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.075in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+
+For this assignment, we consider a modified Reti End Game in three
+dimensions. We will use three chess boards (shown on the next page) to
+represent a flattened view for two dimensions in the game. From this, we will
+generate a reasonable search tree. Most of the board stays the same as the
+*3D/4A* problem, with the exception of the Black Bomber and it's target
+location. For this problem, it is starting at location 117 and it's target
+is 817.  \\
+
+#+CAPTION: Search tree for problem 3D/4A
+[[./img/SearchTree.png]]
