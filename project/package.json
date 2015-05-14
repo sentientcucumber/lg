@@ -6,12 +6,13 @@
   "scripts": {
     "maps": "node src/maps/main.js",
     "trajectories": "node src/trajectories/main.js",
-    "zones": "node src/zones/main.js"
+    "zones": "node src/zones/main.js",
+    "search": "node src/search/main.js"
   },
   "dependencies": {
-    "lodash": "^3.5.0",
+    "async": "^0.9.0",
+    "lodash": "^3.8.0",
     "mathjs": "^1.2.0",
-    "tree-model": "^1.0.0",
-    "underscore": "^1.7.0"
+    "tree-model": "^1.0.0"
   }
 }

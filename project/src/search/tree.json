@@ -1,0 +1,336 @@
+[
+  {
+    "id": {
+      "team": "white",
+      "move": "3,6 - 3,7"
+    },
+    "children": [
+      {
+        "id": {
+          "team": "black",
+          "move": "1,6 - 2,7"
+        },
+        "children": [
+          {
+            "id": {
+              "team": "white",
+              "move": "3,7 - 3,8"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "black",
+                  "move": "2,7 : 3,8"
+                }
+              }
+            ]
+          },
+          {
+            "id": {
+              "team": "white",
+              "move": "8,8 - 7,7"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "black",
+                  "move": "2,7 : 3,7"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": {
+      "team": "white",
+      "move": "8,8 - 7,7"
+    },
+    "children": [
+      {
+        "id": {
+          "team": "black",
+          "move": "1,6 - 2,6"
+        },
+        "children": [
+          {
+            "id": {
+              "team": "white",
+              "move": "3,6 - 3,7"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "black",
+                  "move": "2,6 : 3,7"
+                }
+              }
+            ]
+          },
+          {
+            "id": {
+              "team": "white",
+              "move": "7,7 - 6,6"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "black",
+                  "move": "2,6 : 3,6"
+                }
+              },
+              {
+                "id": {
+                  "team": "black",
+                  "move": "2,6 - 2,7"
+                },
+                "children": [
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "3,6 - 2,7"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": {
+                  "team": "black",
+                  "move": "8,5 - 8,4"
+                },
+                "children": [
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "3,6 - 3,7"
+                    },
+                    "children": [
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "2,6 : 3,7"
+                        }
+                      },
+                      {
+                        "id": {
+                          "team": "white",
+                          "move": "6,6 - 5,5"
+                        },
+                        "children": [
+                          {
+                            "id": {
+                              "team": "black",
+                              "move": "2,6 : 3,6"
+                            }
+                          },
+                          {
+                            "id": {
+                              "team": "black",
+                              "move": "8,4 - 8,3"
+                            },
+                            "children": [
+                              {
+                                "id": {
+                                  "team": "white",
+                                  "move": "5,5 - 4,6"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": {
+          "team": "black",
+          "move": "8,5 - 8,4"
+        },
+        "children": [
+          {
+            "id": {
+              "team": "white",
+              "move": "7,7 - 6,6"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "black",
+                  "move": "1,6 - 2,7"
+                },
+                "children": [
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "3,6 : 2,7"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": {
+                  "team": "black",
+                  "move": "1,6 - 2,6"
+                },
+                "children": [
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "6,6 - 5,5"
+                    },
+                    "children": [
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "2,6 - 2,7"
+                        },
+                        "children": [
+                          {
+                            "id": {
+                              "team": "white",
+                              "move": "3,6 : 2,7"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "2,6 : 3,6"
+                        }
+                      },
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "8,4 - 8,3"
+                        },
+                        "children": [
+                          {
+                            "id": {
+                              "team": "white",
+                              "move": "5,5 - 4,6"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "3,6 - 3,7"
+                    },
+                    "children": [
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "2,6 : 3,7"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": {
+                  "team": "black",
+                  "move": "8,4 - 8,3"
+                },
+                "children": [
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "6,6 - 5,7"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": {
+              "team": "white",
+              "move": "3,6 - 3,7"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "black",
+                  "move": "1,6 - 1,7"
+                },
+                "children": [
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "7,7 - 6,6"
+                    },
+                    "children": [
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "2,7 : 3,7"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": {
+                      "team": "white",
+                      "move": "3,7 - 3,8"
+                    },
+                    "children": [
+                      {
+                        "id": {
+                          "team": "black",
+                          "move": "2,7 : 3,8"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": {
+      "team": "black",
+      "move": "1,6 - 2,5"
+    },
+    "children": [
+      {
+        "id": {
+          "team": "white",
+          "move": "3,6 - 3,7"
+        },
+        "children": [
+          {
+            "id": {
+              "team": "black",
+              "move": "8,5 - 8,4"
+            },
+            "children": [
+              {
+                "id": {
+                  "team": "white",
+                  "move": "3,7 - 3,8"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

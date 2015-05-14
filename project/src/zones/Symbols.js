@@ -28,6 +28,7 @@
     this.piece = piece.name;
     this.trajectory = trajectory.parser;
     this.length = piece.length;
+    this.team = piece.team;
   };
 
   Terminal.prototype.toString = function () {

@@ -2,7 +2,6 @@
   'use strict';
 
   /* Zone.js
-   *
    */
 
   // Dependencies
@@ -75,9 +74,12 @@
         this.startPiece.team !== this.endPiece.team) {
 
       parser.addSymbol(new A(this.marker, this.current.asSet(), this.next.asSet()));
-
       mainTrajectory(this, parser);
+
+      this.parser = parser;
     }
+
+    return this;
   };
 
   module.exports = {
@@ -223,7 +225,6 @@
       parser.replaceSymbol('A', new A(marker.reset, zone.next, new Board(zone.board)));
     } else {
       parser.removeSymbol('A');
-      console.log(parser.toString());
     }
   };
 })();

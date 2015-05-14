@@ -7,10 +7,10 @@
         {
             "name": "King",
             "startX": 1,
-            "startY": 6,
-            "endX": 3,
-            "endY": 8,
-            "length": 3,
+            "startY": 5,
+            "endX": 8,
+            "endY": 5,
+            "length": 7,
             "reachability": [
                 {
                     "condition-1": "| y1 - x1 | <= 1"

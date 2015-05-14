@@ -1,0 +1,138 @@
+#+TITLE: Assignment Eleven
+#+AUTHOR: Michael Hunsinger
+#+OPTIONS: toc:nil \n:nil ':t f:nil num:nil
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS:  article
+#+LaTeX_HEADER: \setlength\parindent{0pt}
+#+LaTeX_HEADER: \usepackage{titling}
+#+LaTeX_HEADER: \usepackage{chessboard}
+#+LaTeX_HEADER: \usepackage[ps]{skak}
+#+LaTeX_HEADER: \usepackage{pstricks,pst-node,pst-tree}
+#+LaTeX_HEADER: \addtolength{\topmargin}{-1.075in}
+#+LaTeX_HEADER: \addtolength{\textheight}{1.75in}
+#+LaTeX_HEADER: \addtolength{\oddsidemargin}{-.375in}
+#+LaTeX_HEADER: \addtolength{\evensidemargin}{-.875in}
+#+LaTeX_HEADER: \addtolength{\textwidth}{0.75in}
+
+* Question
+  The algorithm for construction of strategies can be applied to most abstract
+  board games, including the three mentioned. The algorithm is based on the
+  conditions for draw or win for each team. The outcome of the game is
+  determined by which conditions are met. For instance, as the lecutre notes
+  show, black wins if the Black Bomber is protected and White Bomber is
+  intercepted. From these conditions, a set of zones are created to generate
+  trajectories and negations for these states to exist. \\
+
+** 2D/4A Serial
+   This can be solved by the algorithm covered in class, regardless of the
+   start state. Consider the modified Reti problem in the first assignment. \\
+
+   #+BEGIN_LaTeX
+     \begin{center}
+       \newgame
+       \chessboard[setfen=7K/8/k1P5/8/7p/8/8/8 w - - 0 20]
+     \end{center}
+   #+END_LaTeX
+
+   Since the board has the same pieces, the same conditions for wins and draws
+   are the same. White will win if the White Bomber is protected and Black
+   Bomber is intercepted. Black will win if the Black Bomber is protected and
+   White Bomber is intercepted. A draw will occur if both bombers are protected
+   or intercepted. \\
+
+   As we discovered in the first homework problem, a zone does not exist where
+   the White Fighter can intercept the Black Bomber. Therefore a draw cannot
+   occur and the only outcome is a black win. This outcome is more evident when
+   we consider the gateways (outlined in bold). Note, these boards merge a move
+   for each team into one board but done synchronously, not in parallel.
+
+   #+BEGIN_LaTeX
+     \begin{center}
+       \begin{figure}[H]
+         \caption{Start State}
+         \centering
+         \newgame
+         \chessboard[setfen=7K/8/k1P5/8/7p/8/8/8 w - - 0 20, pgfstyle=border, markfields={f5,g5,h5,e8,e7,e6,e5}]
+       \end{figure}
+       \begin{figure}[H]
+         \caption{After Kg7 and Kb6}
+         \centering
+         \newgame
+         \chessboard[setfen=8/6K1/1kP5/8/7p/8/8/8 w - - 0 20, pgfstyle=border, markfields={f5,g5,h5,d8,d7,d6,d5}]
+       \end{figure}
+       \begin{figure}[H]
+         \caption{After Kh6 and Kc6}
+         \centering
+         \newgame
+         \chessboard[setfen=8/8/2k2K2/8/7p/8/8/8 w - - 0 20, pgfstyle=border, markfields={f5,g5,h5}]
+       \end{figure}
+     \end{center}
+   #+END_LaTeX
+
+** 3D/4A Serial
+   The algorithm for construction of strategies can be applied here as well. We
+   will use the 3D version of the Reti game considered in assignment 10 as an
+   example. We first define the necessary conditions for win and draws. The
+   problem is similar to the 2D serial exercise as the conditions are the
+   same. \\
+
+   When generating the zones we would find similar gateways (only in 3D). The
+   White Fighter would travel along the 3D diagonal (moving one space left,
+   right and down). The figures below show the gateways for the 3D start state.
+
+   #+BEGIN_LaTeX
+     \begin{center}
+       \begin{figure}[H]
+         \caption{xy-plane}
+         \centering
+         \newgame
+         \chessboard[setfen=7K/8/k1P5/7p/8/8/8/8 w - - 0 20, pgfstyle=border, markfields={f6,g6,h6,e8,e7,e6}]
+       \end{figure}
+       \begin{figure}[H]
+         \caption{yz-plane}
+         \centering
+         \newgame
+         \chessboard[setfen=7K/8/k1P5/7p/8/8/8/8 w - - 0 20, pgfstyle=border, markfields={h8,g7,f6,g8,g6,h6,h7}]
+       \end{figure}
+       \begin{figure}[H]
+         \caption{zx-plane}
+         \centering
+         \newgame
+         \chessboard[setfen=7K/8/k1P5/7p/8/8/8/8 w - - 0 20, pgfstyle=border, markfields={d6,d7,d8}]
+       \end{figure}
+     \end{center}
+   #+END_LaTeX
+
+** 2D/4A Concurrent
+   A concurrent implementation could cause issues for this algorithm. In the
+   case of the Reti endgame, we move the White Fighter along the diagonal,
+   which doesn't tell the black team whether we're looking to protect the White
+   Bomber or intercept the Black Bomber. We use this to advance to shrink the
+   distance between gateways. However, if pieces can move concurrently, then
+   when the White Fighter advances down the diagonal, both the Black Bomber and
+   Fighter can advance to the pawn and goal, respectively. Therefore the
+   distances to our gateways have not changed, and we cannot reach them before
+   the White Bomber is destroyed or the Black Bomber reaches it's goal.
+
+   #+BEGIN_LaTeX
+     \begin{center}
+       \begin{figure}[H]
+         \caption{Start State}
+         \centering
+         \newgame
+         \chessboard[setfen=7K/8/k1P5/7p/8/8/8/8 w - - 0 20, pgfstyle=border, markfields={f6,g6,h6,e8,e7,e6,e5}]
+       \end{figure}
+       \begin{figure}[H]
+         \caption{Kg7, Kb6, c7, h4}
+         \centering
+         \newgame
+         \chessboard[setfen=8/6K1/1kP5/8/7p/8/8/8 w - - 0 20, pgfstyle=border, markfields={f5,g5,h5,d8,d7,d6,d5}]
+       \end{figure}
+       \begin{figure}[H]
+         \caption{After Kh6 and Kc6}
+         \centering
+         \newgame
+         \chessboard[setfen=8/8/2k2K2/8/8/7p/8/8 w - - 0 20, pgfstyle=border, markfields={f4,g4,h4}]
+       \end{figure}
+     \end{center}
+     #+END_LaTeX

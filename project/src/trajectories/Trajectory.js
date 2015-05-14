@@ -46,8 +46,10 @@
 
       findDockLocation(this, parser, root);
     } else {
-      console.error('Conditions for the first production were not met.');
-      process.exit(1);
+      console.error(new Error().stack);
+      throw 'Conditions for the first production were not met.';
+      // console.error('Conditions for the first production were not met.');
+      // process.exit(1);
     }
   };
   

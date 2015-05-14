@@ -1,0 +1,77 @@
+{
+    "board": {
+        "xMax": 8,
+        "yMax": 8
+    },
+    "pieces": {
+        "white": [
+            {
+                "name": "Pawn",
+                "startX": 3,
+                "startY": 6,
+                "endX": 3,
+                "endY": 8,
+                "length": 2,
+                "value": 1,
+                "team": "white",
+                "reachability": [
+                    {
+                        "condition-1": "| y2 - x2 | = 1",
+		        "condition-2": "| y1 - x1 | = 0"
+                    }
+                ]
+            },
+            {
+                "name": "King",
+                "startX": 8,
+                "startY": 8,
+                "value": 200,
+                "team": "white",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 1"
+                    },
+                    {
+                        "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            }            
+        ],
+        "black": [
+            {
+                "name": "king",
+                "startX": 1,
+                "startY": 6,
+                "value": 200,
+                "team": "black",
+                "reachability": [
+                    {
+                        "condition-1": "| y1 - x1 | <= 1"
+                    },
+                    {
+                        "condition-1": "| y2 - x2 | <= 1"
+                    }
+                ]
+            },
+            {
+                "name": "pawn",
+                "startX": 8,
+                "startY": 5,
+                "value": 1,
+                "team": "black",
+                "reachability": [
+                    {
+                        "condition-1": "| y2 - x2 | = 1",
+		        "condition-2": "| y1 - x1 | = 0"
+                    }
+                ]
+            },
+            {
+                "name": "goal",
+                "startX": 3,
+                "startY": 8,
+                "team": "black"
+            }
+        ]
+    }
+}

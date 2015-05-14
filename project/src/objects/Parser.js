@@ -22,8 +22,12 @@
     return this.state.join(', ');
   };
   
-  Parser.prototype.addSymbol = function (symbol) {
-    this.state.push(symbol);
+  Parser.prototype.addSymbol = function () {
+    var self = this;
+
+    _.forEach(arguments, function (symbol) {
+      self.state.push(symbol);
+    });
   };
 
   Parser.prototype.addNonTerminal = function (nonterminal) {
